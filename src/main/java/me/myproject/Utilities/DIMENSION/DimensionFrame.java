@@ -3,9 +3,7 @@ package  me.myproject.Utilities.DIMENSION;
 import java.awt.Toolkit;
 
 public class DimensionFrame {
-    public static DimensionFrame instance=new DimensionFrame();
-
-
+    public static DimensionFrame instance = new DimensionFrame();
     public static int widthFrame = Toolkit.getDefaultToolkit().getScreenSize().width *2/3;;
     public static int heightFrame = Toolkit.getDefaultToolkit().getScreenSize().height *4/5;
 
