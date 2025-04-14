@@ -219,4 +219,7 @@ public class DangKyView extends FrameMain implements ActionListener {
         }
     }
 
+    public static void main(String[] args) {
+        new DangKyView();
+    }
 }
