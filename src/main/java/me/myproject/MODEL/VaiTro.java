@@ -1,3 +1,4 @@
+
 package me.myproject.MODEL;
 public class VaiTro {
     private String ID_VaiTro;
