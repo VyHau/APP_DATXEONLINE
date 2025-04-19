@@ -7,13 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DangKyBSL {
-    public String xuLyDangKy(String fullName, String blxCode, String vehicleType, String licensePlate, String phone, String email, String password) {
+    public String xuLyDangKy(String fullName, String phone, String email, String password) {
         if (fullName == null || fullName.trim().isEmpty()) return "Vui lòng nhập họ tên.";
-        if (blxCode == null || blxCode.trim().isEmpty()) return "Vui lòng nhập mã BLX.";
-        if (!maBLXHopLe(blxCode)) return "Mã BLX không hợp lệ. Phải là ký tự chữ và số, từ 5-15 ký tự.";
-        if (vehicleType == null || vehicleType.trim().isEmpty()) return "Vui lòng nhập loại xe.";
-        if (licensePlate == null || licensePlate.trim().isEmpty()) return "Vui lòng nhập biển số.";
-        if (!bienSoHopLe(licensePlate)) return "Biển số không hợp lệ. Ví dụ: 29A-12345 (ô tô) hoặc 29A1-12345 (xe máy).";
         if (!SDTHopLe(phone)) return "Số điện thoại không hợp lệ. Phải bắt đầu bằng 03-09 và có 10 chữ số.";
         if (!EmailHopLe(email)) return "Email không hợp lệ.";
         if (!matKhauHopLe(password)) return "Mật khẩu phải có ít nhất 5 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt.";
