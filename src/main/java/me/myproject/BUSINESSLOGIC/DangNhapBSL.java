@@ -32,7 +32,7 @@ public class DangNhapBSL {
 
 
     // Phương thức đăng nhập
-    public String xuLyDangNhap(String phone, String password) {
+    public String xuLyDangNhap(String phone, String password, String role) {
 //        // Kiểm tra dữ liệu đầu vào
 //        if (phone == null || phone.trim().isEmpty()) {
 //            return "Vui lòng nhập số điện thoại!";
