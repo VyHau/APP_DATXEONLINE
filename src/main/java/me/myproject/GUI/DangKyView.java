@@ -1,4 +1,3 @@
-// File: ClientProject/src/me/myproject/GUI/DangKyView.java
 package me.myproject.GUI;
 
 import java.awt.BorderLayout;
@@ -6,15 +5,22 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -27,13 +33,16 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import me.myproject.BUSINESSLOGIC.DangKyBSL;
+import me.myproject.Utilities.ColorMain;
+import me.myproject.Utilities.FontMain;
 import me.myproject.Utilities.DIMENSION.FrameMain;
 
 public class DangKyView extends FrameMain implements ActionListener {
     private final DangKyBSL business;
-    public JTextField tfdFullName, tfdBLXCode, tfdVehicleType, tfdLicensePlate, tfdPhone, tfdEmail;
+    public JTextField tfdFullName, tfdBLXCode, tfdVehicleType, tfdLicensePlate, tfdPhone, tfAddress;
     public JPasswordField tfdPass;
     public JButton btnRegister;
+    private JCheckBox termsCheckBox;
 
     public DangKyView() {
         super("Đăng ký");
@@ -42,7 +51,6 @@ public class DangKyView extends FrameMain implements ActionListener {
     }
 
     private void init() {
-        // Thiết lập layout chính
         this.setLayout(new BorderLayout());
 
         // Lấy kích thước của FrameMain bằng getSize()
@@ -61,13 +69,29 @@ public class DangKyView extends FrameMain implements ActionListener {
         backgroundLabel.setBounds(0, 0, frameWidth, frameHeight);
         layeredPane.add(backgroundLabel, JLayeredPane.DEFAULT_LAYER);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        panel.setBackground(new Color(230, 240, 255, 200)); 
-        int panelWidth = (int)(frameWidth * 0.5);  // 50% chiều rộng của frame
-        int panelHeight = (int)(frameHeight * 0.7); // 70% chiều cao của frame
-        // Đặt panel vào giữa frame
+        // Panel chính với viền bo tròn và hiệu ứng shadow
+        JPanel panel = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Vẽ background với gradient
+                GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255, 245), getWidth(), getHeight(), new Color(240, 248, 255, 245));
+                g2d.setPaint(gradient);
+                
+                // Vẽ hình chữ nhật bo tròn
+                g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
+                
+                g2d.dispose();
+            }
+        };
+        
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        int panelWidth = (int)(frameWidth * 0.5);
+        int panelHeight = (int)(frameHeight * 0.75);
         panel.setBounds((frameWidth - panelWidth) / 2, (frameHeight - panelHeight) / 2, panelWidth, panelHeight);
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -76,122 +100,135 @@ public class DangKyView extends FrameMain implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setOpaque(false);
+        
         JLabel titleLabel = new JLabel("ĐĂNG KÝ");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(FontMain.TITLE_FONT);
+        titleLabel.setForeground(ColorMain.colorPrimary);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(titleLabel, gbc);
+        titlePanel.add(titleLabel, BorderLayout.CENTER);
+        
+        // Underline
+        JPanel underline = new JPanel();
+        underline.setBackground(ColorMain.colorPrimary);
+        underline.setPreferredSize(new Dimension(150, 3));
+        JPanel underlineWrapper = new JPanel(new BorderLayout());
+        underlineWrapper.setOpaque(false);
+        underlineWrapper.add(underline, BorderLayout.CENTER);
+        titlePanel.add(underlineWrapper, BorderLayout.SOUTH);
+        
+        panel.add(titlePanel, gbc);
 
+        // Custom text fields
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridx = 0;
         JLabel fullNameLabel = new JLabel("Họ tên");
-        fullNameLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        fullNameLabel.setFont(FontMain.LABEL_FONT);
+        fullNameLabel.setForeground(ColorMain.colorPrimary);
         panel.add(fullNameLabel, gbc);
+        
         gbc.gridx = 1;
-        tfdFullName = new JTextField(15);
+        tfdFullName = createStyledTextField();
         panel.add(tfdFullName, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        JLabel blxCodeLabel = new JLabel("Nhập mã BLX");
-        blxCodeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        panel.add(blxCodeLabel, gbc);
-        gbc.gridx = 1;
-        tfdBLXCode = new JTextField(15);
-        panel.add(tfdBLXCode, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        JLabel vehicleTypeLabel = new JLabel("Nhập loại xe");
-        vehicleTypeLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        panel.add(vehicleTypeLabel, gbc);
-        gbc.gridx = 1;
-        tfdVehicleType = new JTextField(15);
-        panel.add(tfdVehicleType, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        JLabel licensePlateLabel = new JLabel("Nhập biển số");
-        licensePlateLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        panel.add(licensePlateLabel, gbc);
-        gbc.gridx = 1;
-        tfdLicensePlate = new JTextField(15);
-        panel.add(tfdLicensePlate, gbc);
-
-        gbc.gridx = 0;
         gbc.gridy = 5;
-        JLabel phoneLabel = new JLabel("SĐT");
-        phoneLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        JLabel phoneLabel = new JLabel("Số điện thoại");
+        phoneLabel.setFont(FontMain.LABEL_FONT);
+        phoneLabel.setForeground(ColorMain.colorPrimary);
         panel.add(phoneLabel, gbc);
+        
         gbc.gridx = 1;
-        tfdPhone = new JTextField(15);
+        tfdPhone = createStyledTextField();
         panel.add(tfdPhone, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 6;
-        JLabel emailLabel = new JLabel("Email");
-        emailLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        panel.add(emailLabel, gbc);
+        JLabel addressLabel = new JLabel("Địa chỉ");
+        addressLabel.setFont(FontMain.LABEL_FONT);
+        addressLabel.setForeground(ColorMain.colorPrimary);
+        panel.add(addressLabel, gbc);
+        
         gbc.gridx = 1;
-        tfdEmail = new JTextField(15);
-        panel.add(tfdEmail, gbc);
+        tfAddress = createStyledTextField();
+        panel.add(tfAddress, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 7;
         JLabel passLabel = new JLabel("Mật khẩu");
-        passLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        passLabel.setFont(FontMain.LABEL_FONT);
+        passLabel.setForeground(ColorMain.colorPrimary);
         panel.add(passLabel, gbc);
+        
         gbc.gridx = 1;
-        tfdPass = new JPasswordField(15);
+        tfdPass = createStyledPasswordField();
         panel.add(tfdPass, gbc);
 
-        // Checkbox "Chấp nhận điều khoản"
+        // Checkbox với style mới
         gbc.gridx = 0;
         gbc.gridy = 8;
         gbc.gridwidth = 2;
-        JCheckBox termsCheckBox = new JCheckBox("Chấp nhận điều khoản");
+        termsCheckBox = new JCheckBox("Tôi đồng ý với điều khoản dịch vụ");
+        termsCheckBox.setFont(new Font("Arial", Font.PLAIN, 13));
+        termsCheckBox.setForeground(new Color(70, 70, 70));
+        termsCheckBox.setOpaque(false);
         termsCheckBox.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(termsCheckBox, gbc);
 
-        // Nút "Đăng ký"
+        // Nút đăng ký đẹp hơn
         gbc.gridx = 0;
         gbc.gridy = 9;
         gbc.gridwidth = 2;
-        btnRegister = new JButton("Đăng ký");
-        btnRegister.setBackground(new Color(0, 191, 255));
-        btnRegister.setForeground(Color.BLACK);
+        btnRegister = createStyledButton("Đăng ký");
         btnRegister.addActionListener(this);
         panel.add(btnRegister, gbc);
 
+        // Thêm hoặc cải thiện các phần khác
         gbc.gridy = 10;
-        JLabel orLabel = new JLabel("OR");
+        JLabel orLabel = new JLabel("HOẶC");
+        orLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        orLabel.setForeground(new Color(150, 150, 150));
         orLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(orLabel, gbc);
 
         gbc.gridy = 11;
-        JLabel loginLabel = new JLabel("Bạn đã có tài khoản?");
-        loginLabel.setForeground(Color.BLUE);
+        JLabel loginLabel = new JLabel("Bạn đã có tài khoản? Đăng nhập ngay");
+        loginLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        loginLabel.setForeground(ColorMain.colorSecondary);
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
         loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loginLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new DangNhapView(); // Chuyển sang màn hình đăng nhập
-                dispose(); // Đóng màn hình đăng ký
+                new DangNhapView();
+                dispose();
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                loginLabel.setText("<html><u>Bạn đã có tài khoản? Đăng nhập ngay</u></html>");
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                loginLabel.setText("Bạn đã có tài khoản? Đăng nhập ngay");
             }
         });
         panel.add(loginLabel, gbc);
+
         layeredPane.add(panel, JLayeredPane.PALETTE_LAYER);
         this.add(layeredPane, BorderLayout.CENTER);
 
-        // Đảm bảo rằng các thành phần được cập nhật đúng kích thước
+        // Đảm bảo các thành phần được cập nhật đúng kích thước
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 Dimension size = getSize();
                 layeredPane.setSize(size);
                 backgroundLabel.setBounds(0, 0, size.width, size.height);
                 int newPanelWidth = (int)(size.width * 0.5);
-                int newPanelHeight = (int)(size.height * 0.7);
+                int newPanelHeight = (int)(size.height * 0.75);
                 panel.setBounds((size.width - newPanelWidth) / 2, (size.height - newPanelHeight) / 2, newPanelWidth, newPanelHeight);
             }
         });
@@ -199,23 +236,114 @@ public class DangKyView extends FrameMain implements ActionListener {
         // Hiển thị frame
         this.setVisible(true);
     }
+    
+    // Tạo text field đẹp
+    private JTextField createStyledTextField() {
+        JTextField textField = new JTextField(15);
+        textField.setFont(FontMain.TEXT_FONT);
+        textField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        return textField;
+    }
+    
+    // Tạo password field đẹp
+    private JPasswordField createStyledPasswordField() {
+        JPasswordField passwordField = new JPasswordField(15);
+        passwordField.setFont(FontMain.TEXT_FONT);
+        passwordField.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200)),
+            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        ));
+        return passwordField;
+    }
+    
+    // Tạo nút có hiệu ứng gradient và hover
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text) {
+            private boolean hover = false;
+            {
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hover = true;
+                        repaint();
+                    }
+                    
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hover = false;
+                        repaint();
+                    }
+                });
+            }
+            
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2d = (Graphics2D) g.create();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                // Gradient từ PRIMARY đến SECONDARY color
+                GradientPaint gradient;
+                if (hover) 
+                    gradient = new GradientPaint(0, 0, ColorMain.colorSecondary, getWidth(), getHeight(), new Color(0, 119, 204));
+                else 
+                    gradient = new GradientPaint(0, 0, ColorMain.colorPrimary, getWidth(), getHeight(), ColorMain.colorSecondary);
+                g2d.setPaint(gradient);
+                g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
+                
+                // Vẽ text
+                g2d.setFont(new Font("Arial", Font.BOLD, 14));
+                g2d.setColor(Color.WHITE);
+                FontMetrics metrics = g2d.getFontMetrics();
+                int x = (getWidth() - metrics.stringWidth(getText())) / 2;
+                int y = ((getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
+                g2d.drawString(getText(), x, y);
+                
+                g2d.dispose();
+            }
+        };
+        
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setPreferredSize(new Dimension(200, 40));
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        return button;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         if (action.equals("Đăng ký")) {
+            if (!termsCheckBox.isSelected()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng đồng ý với điều khoản dịch vụ", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
             String fullName = tfdFullName.getText().trim();
-            String blxCode = tfdBLXCode.getText().trim();
-            String vehicleType = tfdVehicleType.getText().trim();
-            String licensePlate = tfdLicensePlate.getText().trim();
             String phone = tfdPhone.getText().trim();
-            String email = tfdEmail.getText().trim();
+            String address = tfAddress.getText().trim();
             String pass = String.valueOf(tfdPass.getPassword()).trim();
-            String message = business.xuLyDangKy(fullName, blxCode, vehicleType, licensePlate, phone, email, pass);
+            
+            // Kiểm tra dữ liệu đầu vào cơ bản
+            if (fullName.isEmpty() || phone.isEmpty() || address.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String message = business.xuLyDangKy(fullName, phone, address, pass);
+            
+            // Hiển thị thông báo đẹp hơn
             ImageIcon icon = new ImageIcon("src/resources/image2.png");
             JLabel label = new JLabel(message, icon, JLabel.CENTER);
-            JOptionPane.showMessageDialog(this, label, "Thông báo",
-                    message.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+            label.setFont(new Font("Arial", Font.PLAIN, 14));
+            
+            JOptionPane.showMessageDialog(this, label, "Thông báo", message.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
         }
     }
 
