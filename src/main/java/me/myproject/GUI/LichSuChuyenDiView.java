@@ -77,7 +77,7 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         panel.setPreferredSize(new Dimension(getWidth(), 60));
         panel.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 15));
         
-        ImageIcon backIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/admin.png"));
+        ImageIcon backIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/back.png"));
         btnQuayLai = new JButton(backIcon);
         btnQuayLai.setBorderPainted(false);
         btnQuayLai.setFocusPainted(false);
