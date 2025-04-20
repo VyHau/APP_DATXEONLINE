@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -34,6 +35,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import me.myproject.BUSINESSLOGIC.DangNhapBSL;
+import me.myproject.MODEL.TaiKhoan;
 import me.myproject.Utilities.ColorMain;
 import me.myproject.Utilities.FontMain;
 import me.myproject.Utilities.DIMENSION.FrameMain;
@@ -55,7 +57,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
     private void init() {
         this.setLayout(new BorderLayout());
         
-        // Lấy kích thước của FrameMain
         Dimension frameDimension = this.getSize();
         int frameWidth = frameDimension.width;
         int frameHeight = frameDimension.height;
@@ -63,7 +64,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(frameWidth, frameHeight));
         
-        // Hình nền - phủ toàn bộ frame
         JLabel backgroundLabel = new JLabel();
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/bgrmenu.png"));
         Image backgroundImage = backgroundIcon.getImage().getScaledInstance(frameWidth, frameHeight, Image.SCALE_SMOOTH);
@@ -71,20 +71,14 @@ public class DangNhapView extends FrameMain implements ActionListener {
         backgroundLabel.setBounds(0, 0, frameWidth, frameHeight);
         layeredPane.add(backgroundLabel, JLayeredPane.DEFAULT_LAYER);
     
-        // Panel chính với viền bo tròn và hiệu ứng gradient
         JPanel panel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
-                // Vẽ background với gradient
                 GradientPaint gradient = new GradientPaint(0, 0, new Color(255, 255, 255, 245), getWidth(), getHeight(), new Color(240, 248, 255, 245));
                 g2d.setPaint(gradient);
-                
-                // Vẽ hình chữ nhật bo tròn
                 g2d.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 20, 20));
-                
                 g2d.dispose();
             }
         };
@@ -99,7 +93,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         
-        // Tiêu đề với gạch chân màu xanh
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -112,7 +105,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titlePanel.add(titleLabel, BorderLayout.CENTER);
         
-        // Gạch chân
         JPanel underline = new JPanel();
         underline.setBackground(ColorMain.colorPrimary);
         underline.setPreferredSize(new Dimension(150, 3));
@@ -162,7 +154,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         cbRole.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(1, 2, 0, 2)));
         panel.add(cbRole, gbc);
         
-        // Checkbox nhớ mật khẩu và nút quên mật khẩu
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 1;
@@ -181,12 +172,10 @@ public class DangNhapView extends FrameMain implements ActionListener {
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setColor(ColorMain.colorSecondary);
                 
-                // Vẽ gạch chân khi hover
                 if (getModel().isRollover()) {
                     int y = getHeight() - 3;
                     g2d.drawLine(0, y, getWidth(), y);
                 }
-                
                 g2d.dispose();
             }
         };
@@ -199,7 +188,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         btnForgetPass.addActionListener(this);
         panel.add(btnForgetPass, gbc);
         
-        // Nút đăng nhập đẹp hơn
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
@@ -207,7 +195,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         btnLogin.addActionListener(this);
         panel.add(btnLogin, gbc);
         
-        // Phần "HOẶC"
         gbc.gridy = 6;
         JLabel orLabel = new JLabel("HOẶC");
         orLabel.setFont(new Font("Arial", Font.BOLD, 12));
@@ -215,7 +202,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         orLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(orLabel, gbc);
         
-        // Link đăng ký với hiệu ứng hover
         gbc.gridy = 7;
         JLabel signUpLabel = new JLabel("Bạn chưa có tài khoản? Đăng ký ngay");
         signUpLabel.setFont(new Font("Arial", Font.BOLD, 13));
@@ -244,7 +230,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
         layeredPane.add(panel, JLayeredPane.PALETTE_LAYER);
         this.add(layeredPane, BorderLayout.CENTER);
         
-        // Đảm bảo rằng các thành phần được cập nhật đúng kích thước
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 Dimension size = getSize();
@@ -259,29 +244,22 @@ public class DangNhapView extends FrameMain implements ActionListener {
         this.setVisible(true);
     }
     
-    // Tạo text field với style đẹp
     private JTextField createStyledTextField() {
         JTextField textField = new JTextField(15);
         textField.setFont(FontMain.TEXT_FONT);
-        textField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
         return textField;
     }
     
-    // Tạo password field với style đẹp
     private JPasswordField createStyledPasswordField() {
         JPasswordField passwordField = new JPasswordField(15);
         passwordField.setFont(FontMain.TEXT_FONT);
-        passwordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
         return passwordField;
     }
     
-    // Tạo button với hiệu ứng gradient và hover
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text) {
             private boolean hover = false;
@@ -307,24 +285,20 @@ public class DangNhapView extends FrameMain implements ActionListener {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 
-                // Gradient từ PRIMARY đến SECONDARY color
                 GradientPaint gradient;
-                if (hover) {
+                if (hover) 
                     gradient = new GradientPaint(0, 0, ColorMain.colorSecondary, getWidth(), getHeight(), new Color(0, 119, 204));
-                } else {
+                else 
                     gradient = new GradientPaint(0, 0, ColorMain.colorPrimary, getWidth(), getHeight(), ColorMain.colorSecondary);
-                }
                 g2d.setPaint(gradient);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
                 
-                // Vẽ text
                 g2d.setFont(new Font("Arial", Font.BOLD, 14));
                 g2d.setColor(Color.WHITE);
                 FontMetrics metrics = g2d.getFontMetrics();
                 int x = (getWidth() - metrics.stringWidth(getText())) / 2;
                 int y = ((getHeight() - metrics.getHeight()) / 2) + metrics.getAscent();
                 g2d.drawString(getText(), x, y);
-                
                 g2d.dispose();
             }
         };
@@ -343,129 +317,105 @@ public class DangNhapView extends FrameMain implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
-        
+
         if (action.equals("Đăng nhập")) {
             String phone = tfdPhone.getText().trim();
             String pass = String.valueOf(tfdPass.getPassword()).trim();
             String role = (String) cbRole.getSelectedItem();
-            
-            // Kiểm tra đầu vào cơ bản
-            if (phone.isEmpty() || pass.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin đăng nhập", 
-                    "Thông báo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            
-            String message = bussiness.xuLyDangNhap(phone, pass, role);
-            
-            // Hiển thị thông báo đẹp hơn
+
+            Map<String, Object> result = bussiness.xuLyDangNhap(phone, pass, role);
+            String message = (String) result.get("message");
+            TaiKhoan taiKhoan = (TaiKhoan) result.get("taiKhoan");
+
             ImageIcon icon = new ImageIcon("src/resources/image2.png");
             JLabel label = new JLabel(message, icon, JLabel.CENTER);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
-            
-            JOptionPane.showMessageDialog(this, label, "Thông báo",
-                message.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-                
+            JOptionPane.showMessageDialog(this, label, "Thông báo", taiKhoan != null ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+
+            if (taiKhoan != null) {
+                switch (taiKhoan.getID_VaiTro().toUpperCase()) {
+                    case "USER":
+                        new TrangChuUserView(taiKhoan);
+                        break;
+                    case "DRIVER":
+                        // new TrangChuDriverView(taiKhoan);
+                        break;
+                    case "ADMIN":
+                        // new TrangChuAdminView(taiKhoan);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "Vai trò không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        return;
+                }
+                dispose();
+            }
+
         } else if (action.equals("Quên mật khẩu?")) {
             String phone = tfdPhone.getText().trim();
-            
             if (phone.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại để khôi phục mật khẩu", 
-                    "Thông báo", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập số điện thoại để khôi phục mật khẩu", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
             String message = bussiness.xuLyQuenMatKhau(phone);
-            
-            JOptionPane.showMessageDialog(this, message, "Thông báo",
-                message.contains("Mã OTP đã được gửi") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-                
-            if (!message.contains("Mã OTP đã được gửi")) 
-                return;
+            JOptionPane.showMessageDialog(this, message, "Thông báo", message.contains("Mã OTP đã được gửi") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
 
-            // Dialog nhập OTP đẹp hơn
+            if (!message.contains("Mã OTP đã được gửi")) return;
+
             JTextField otpField = new JTextField(10);
             otpField.setFont(new Font("Arial", Font.BOLD, 14));
-            otpField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            ));
-            
+            otpField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+
             JPanel otpPanel = new JPanel(new BorderLayout(10, 10));
             otpPanel.add(new JLabel("Nhập mã OTP đã gửi:"), BorderLayout.NORTH);
             otpPanel.add(otpField, BorderLayout.CENTER);
-            
-            int otpResult = JOptionPane.showConfirmDialog(this, otpPanel, 
-                "Xác nhận OTP", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                
+
+            int otpResult = JOptionPane.showConfirmDialog(this, otpPanel, "Xác nhận OTP", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
             if (otpResult != JOptionPane.OK_OPTION) return;
-            
+
             String otpInput = otpField.getText().trim();
             String otpValidMessage = bussiness.xacThucOTP(phone, otpInput);
-            
-            JOptionPane.showMessageDialog(this, otpValidMessage, "Thông báo",
-                otpValidMessage.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-                
-            if (!otpValidMessage.contains("thành công")) 
-                return;
 
-            // Dialog nhập mật khẩu mới đẹp hơn
+            JOptionPane.showMessageDialog(this, otpValidMessage, "Thông báo", otpValidMessage.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+
+            if (!otpValidMessage.contains("thành công")) return;
+
             JPasswordField newPassField = new JPasswordField();
             JPasswordField confirmPassField = new JPasswordField();
-            
             newPassField.setFont(FontMain.TEXT_FONT);
             confirmPassField.setFont(FontMain.TEXT_FONT);
-            
-            newPassField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            ));
-            
-            confirmPassField.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            ));
-            
+            newPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            confirmPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+
             JPanel passPanel = new JPanel(new GridBagLayout());
             GridBagConstraints passGbc = new GridBagConstraints();
             passGbc.fill = GridBagConstraints.HORIZONTAL;
             passGbc.insets = new Insets(5, 5, 5, 5);
-            
             passGbc.gridx = 0;
             passGbc.gridy = 0;
             passPanel.add(new JLabel("Mật khẩu mới:"), passGbc);
-            
             passGbc.gridx = 1;
-            passGbc.gridy = 0;
             passGbc.weightx = 1.0;
             passPanel.add(newPassField, passGbc);
-            
             passGbc.gridx = 0;
             passGbc.gridy = 1;
             passGbc.weightx = 0.0;
             passPanel.add(new JLabel("Xác nhận mật khẩu:"), passGbc);
-            
             passGbc.gridx = 1;
-            passGbc.gridy = 1;
             passGbc.weightx = 1.0;
             passPanel.add(confirmPassField, passGbc);
-            
-            int option = JOptionPane.showConfirmDialog(this, passPanel, "Đổi mật khẩu", 
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
+            int option = JOptionPane.showConfirmDialog(this, passPanel, "Đổi mật khẩu",JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if (option == JOptionPane.OK_OPTION) {
                 String newPass = new String(newPassField.getPassword()).trim();
                 String confirmPass = new String(confirmPassField.getPassword()).trim();
-                
                 String updateMessage = bussiness.capNhatMatKhau(phone, newPass, confirmPass);
-                
                 ImageIcon icon = new ImageIcon("src/resources/image2.png");
                 JLabel label = new JLabel(updateMessage, icon, JLabel.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 14));
-                
-                JOptionPane.showMessageDialog(this, label, "Thông báo",
-                    updateMessage.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, label, "Thông báo",updateMessage.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
             }
         }
     }
+
 }
