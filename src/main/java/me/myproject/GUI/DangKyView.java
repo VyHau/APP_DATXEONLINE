@@ -40,7 +40,7 @@ import me.myproject.Utilities.DIMENSION.FrameMain;
 public class DangKyView extends FrameMain implements ActionListener {
     private final DangKyBSL business;
     public JTextField tfdFullName, tfdBLXCode, tfdVehicleType, tfdLicensePlate, tfdPhone, tfAddress;
-    public JPasswordField tfdPass;
+    public JPasswordField tfdPass, tdfConfirmPass;
     public JButton btnRegister;
     private JCheckBox termsCheckBox;
 
@@ -166,9 +166,20 @@ public class DangKyView extends FrameMain implements ActionListener {
         tfdPass = createStyledPasswordField();
         panel.add(tfdPass, gbc);
 
-        // Checkbox với style mới
         gbc.gridx = 0;
         gbc.gridy = 8;
+        JLabel confirmPassWordLabel = new JLabel("Xác nhận mật khẩu:");
+        confirmPassWordLabel.setFont(FontMain.LABEL_FONT);
+        confirmPassWordLabel.setForeground(ColorMain.colorPrimary);
+        panel.add(confirmPassWordLabel, gbc);
+        
+        gbc.gridx = 1;
+        tdfConfirmPass = createStyledPasswordField();
+        panel.add(tdfConfirmPass, gbc);
+
+        // Checkbox với style mới
+        gbc.gridx = 0;
+        gbc.gridy = 9;
         gbc.gridwidth = 2;
         termsCheckBox = new JCheckBox("Tôi đồng ý với điều khoản dịch vụ");
         termsCheckBox.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -179,21 +190,21 @@ public class DangKyView extends FrameMain implements ActionListener {
 
         // Nút đăng ký đẹp hơn
         gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridy = 10;
         gbc.gridwidth = 2;
         btnRegister = createStyledButton("Đăng ký");
         btnRegister.addActionListener(this);
         panel.add(btnRegister, gbc);
 
         // Thêm hoặc cải thiện các phần khác
-        gbc.gridy = 10;
+        gbc.gridy = 11;
         JLabel orLabel = new JLabel("HOẶC");
         orLabel.setFont(new Font("Arial", Font.BOLD, 12));
         orLabel.setForeground(new Color(150, 150, 150));
         orLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(orLabel, gbc);
 
-        gbc.gridy = 11;
+        gbc.gridy = 12;
         JLabel loginLabel = new JLabel("Bạn đã có tài khoản? Đăng nhập ngay");
         loginLabel.setFont(new Font("Arial", Font.BOLD, 13));
         loginLabel.setForeground(ColorMain.colorSecondary);
@@ -252,9 +263,7 @@ public class DangKyView extends FrameMain implements ActionListener {
     private JPasswordField createStyledPasswordField() {
         JPasswordField passwordField = new JPasswordField(15);
         passwordField.setFont(FontMain.TEXT_FONT);
-        passwordField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200)),
-            BorderFactory.createEmptyBorder(8, 10, 8, 10)
+        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)
         ));
         return passwordField;
     }
@@ -329,20 +338,21 @@ public class DangKyView extends FrameMain implements ActionListener {
             String phone = tfdPhone.getText().trim();
             String address = tfAddress.getText().trim();
             String pass = String.valueOf(tfdPass.getPassword()).trim();
-            
+            String confirmPass = String.valueOf(tdfConfirmPass.getPassword()).trim();
             // Kiểm tra dữ liệu đầu vào cơ bản
             if (fullName.isEmpty() || phone.isEmpty() || address.isEmpty() || pass.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            
-            String message = business.xuLyDangKy(fullName, phone, address, pass);
-            
+            if (confirmPass.isEmpty()){
+                JOptionPane.showMessageDialog(this, "Vui lòng xác nhận lại mật khẩu","Thông báo",JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String message = business.xuLyDangKy(fullName, phone, address, pass, confirmPass);
             // Hiển thị thông báo đẹp hơn
             ImageIcon icon = new ImageIcon("src/resources/image2.png");
             JLabel label = new JLabel(message, icon, JLabel.CENTER);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
-            
             JOptionPane.showMessageDialog(this, label, "Thông báo", message.contains("thành công") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
         }
     }
