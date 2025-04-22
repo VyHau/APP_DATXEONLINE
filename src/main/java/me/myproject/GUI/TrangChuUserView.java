@@ -28,18 +28,20 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import me.myproject.MODEL.TaiKhoan;
 import me.myproject.Utilities.DIMENSION.FrameMain;
 
 public class TrangChuUserView extends FrameMain implements ActionListener {
-    
+    private TaiKhoan tk;
     private JPanel mainPanel, menuPanel, contentPanel, headerPanel;
     private JLabel logoLabel, timeLabel, userImageLabel, userTypeLabel;
     private JButton btnDatXe, btnHuyChuyenDi, btnLichSuDiChuyen, btnChatVoiTaiXe, btnDangXuat;
     private DateTimeFormatter timeFormatter;
     private Timer timeTimer;
     
-    public TrangChuUserView() {
+    public TrangChuUserView(TaiKhoan taiKhoan) {
         super("Trang Chủ - Ứng Dụng Đặt Xe");
+        tk = taiKhoan;
         init();
     }
     
@@ -111,7 +113,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         
         // Panel header
         headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(20, 180, 180, 230)); // Màu xanh ngọc với độ trong suốt
+        headerPanel.setBackground(new Color(20, 180, 180, 230)); // Màu xanh ngọc với độ trong suốt 
         headerPanel.setPreferredSize(new Dimension(this.getWidth(), 70));
         
         // Panel menu bên trái
@@ -135,7 +137,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         // Thêm hình ảnh logo bên trái chữ CRAB
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(60, 60));
-        ImageIcon logoApp = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/logo.png"));
+        ImageIcon logoApp = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/logo1.png"));
         Image logoImg = logoApp.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
         logoApp = new ImageIcon(logoImg);
         JLabel logoImageLabel = new JLabel(logoApp);
@@ -190,7 +192,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         userInfoPanel.setMaximumSize(new Dimension(100, 50)); // Giới hạn kích thước panel thông tin
         
         // Hình ảnh người dùng
-        ImageIcon userIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/logo.png")); 
+        ImageIcon userIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/user.png")); 
         Image userImg = userIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH); 
         userImageLabel = new JLabel(new ImageIcon(userImg));
         userImageLabel.setPreferredSize(new Dimension(60, 60)); 
@@ -264,7 +266,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         logoPanel.setAlignmentX(0.5f);
         //logoPanel.add(logoContentLabel, BorderLayout.CENTER);
 
-        ImageIcon logoContentIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/admin.png"));
+        ImageIcon logoContentIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/logo.png"));
         Image logoContentImg = logoContentIcon.getImage().getScaledInstance(190, 190, Image.SCALE_SMOOTH);
         JLabel logoContentLabel = new JLabel(new ImageIcon(logoContentImg));
         logoContentLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -297,7 +299,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         
         contentPanel.add(welcomePanel, BorderLayout.CENTER);
     }
-        private void createLeftMenu() {
+    private void createLeftMenu() {
         // Xóa tất cả các thành phần hiện có khỏi menuPanel
         menuPanel.removeAll();
         
@@ -331,7 +333,6 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         // Định vị nút đăng xuất ở dưới cùng, cách 50px từ cạnh dưới
         btnDangXuat.setBounds(leftMargin, menuPanelHeight - buttonHeight - 50, buttonWidth, buttonHeight);
         
-        // Thêm các nút vào panel
         menuPanel.add(btnDatXe);
         menuPanel.add(btnHuyChuyenDi);
         menuPanel.add(btnLichSuDiChuyen);
@@ -370,7 +371,6 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
                 // Không thay đổi màu khi di chuột qua như yêu cầu
             }
-            
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -392,9 +392,7 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // Đặt lại màu tất cả các nút
         resetButtonColors();
-        
         Object source = e.getSource();
-        
         if (source == btnDatXe) {
             btnDatXe.setForeground(new Color(20, 180, 180));
             // Hiển thị giao diện đặt xe
@@ -404,7 +402,11 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         } else if (source == btnLichSuDiChuyen) {
             btnLichSuDiChuyen.setForeground(new Color(20, 180, 180));
             this.dispose();
-            new LichSuChuyenDiView();
+            try {
+                new LichSuChuyenDiView(tk);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         } else if (source == btnChatVoiTaiXe) {
             btnChatVoiTaiXe.setForeground(new Color(20, 180, 180));
             // Hiển thị giao diện chat với tài xế
@@ -423,7 +425,5 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         btnChatVoiTaiXe.setForeground(Color.WHITE);
         btnDangXuat.setForeground(new Color(255, 100, 100)); // Giữ màu đặc biệt cho nút đăng xuất
     }
-    public static void main(String[] args) {
-        new TrangChuUserView();
-    }
+
 }
