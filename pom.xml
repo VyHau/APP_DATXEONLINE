@@ -28,16 +28,20 @@
       <version>12.6.2.jre11</version> 
     </dependency>
     <dependency>
-	    <groupId>com.google.code.gson</groupId>
-	    <artifactId>gson</artifactId>
-	    <version>2.10</version>
-	</dependency>
-  <dependency>
-    <groupId>com.toedter</groupId>
-    <artifactId>jcalendar</artifactId>
-    <version>1.4</version>
-  </dependency>
-
+	<groupId>com.google.code.gson</groupId>
+	<artifactId>gson</artifactId>
+	<version>2.10</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.toedter</groupId>
+    	<artifactId>jcalendar</artifactId>
+    	<version>1.4</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.fasterxml.jackson.core</groupId>
+    	<artifactId>jackson-databind</artifactId>
+    	<version>2.13.0</version> <!-- Check for the latest version -->
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
