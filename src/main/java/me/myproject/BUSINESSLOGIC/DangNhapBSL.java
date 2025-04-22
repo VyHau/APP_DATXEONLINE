@@ -33,15 +33,12 @@ public class DangNhapBSL {
             Map<String, Object> response = APIHelper.postForMap("http://localhost:8080/ProjectNHOM/api-account", data);
 
             String status = (String) response.get("status");
-            if ("success".equals(status)) {
+            if ("Success".equals(status)) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> userData = (Map<String, Object>) response.get("data");
-                String userName = (String) userData.get("userName");
-                String passWord = (String) userData.get("passWord");
                 String idVaiTro = (String) userData.get("ID_VaiTro");
                 String idRef = (String) userData.get("ID_Ref");
-
-                TaiKhoan taiKhoan = new TaiKhoan(userName, passWord, idVaiTro, idRef);
+                TaiKhoan taiKhoan = new TaiKhoan(phone, password, idVaiTro, idRef);
                 result.put("message", "Đăng nhập thành công!");
                 result.put("taiKhoan", taiKhoan);
             } else {
