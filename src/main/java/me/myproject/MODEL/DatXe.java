@@ -17,6 +17,7 @@ public class DatXe {
     private int diemSo;
     private String danhGia;
 
+    public DatXe(){};
     public DatXe(String ID_DatXe, String ID_KH, String ID_TX, String ID_ThanhToan, String ID_KhuyenMai,
              String DiemTra, String DiemDon, Date thoiGianDat, Date thoiGianDon, Date thoiGianDen,
             String trangThai, double khoangCach, int diemSo, String danhGia) {
