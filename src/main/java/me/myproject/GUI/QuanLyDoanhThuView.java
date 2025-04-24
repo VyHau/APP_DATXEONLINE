@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import com.toedter.calendar.JDateChooser;
 
 @SuppressWarnings("unused")
 public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
@@ -27,9 +30,9 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
     // Thành phần cho phần lọc
     private JComboBox<String> cboThoiGian;
     private JLabel lblTu;
-    private JComboBox<String> cboTuNgay;
+    private JDateChooser dateFrom; // Thay JComboBox cboTuNgay bằng JDateChooser
     private JLabel lblDen;
-    private JComboBox<String> cboDenNgay;
+    private JDateChooser dateTo;   // Thay JComboBox cboDenNgay bằng JDateChooser
     private JButton btnApDung;
     private JButton btnLamMoi;
     
@@ -61,7 +64,7 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
     private DecimalFormat dinhDangTien = new DecimalFormat("#,###");
     
     // Các màu sắc chính
-    private Color mainBlue = new Color(0, 188, 212);
+    private Color titleCyan = new Color(0, 188, 212); // Màu tiêu đề giống Đánh Giá Cá Nhân
     private Color greenColor = new Color(0, 150, 136);
     private Color blueColor = new Color(33, 150, 243);
     private Color orangeColor = new Color(255, 152, 0);
@@ -86,7 +89,7 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         
         // Khởi tạo panel tiêu đề
         panelTieuDe = new JPanel(new BorderLayout());
-        panelTieuDe.setBackground(mainBlue);
+        panelTieuDe.setBackground(titleCyan);
         panelTieuDe.setPreferredSize(new Dimension(DimensionFrame.widthFrame, 35));
         
         // Khởi tạo panel nội dung
@@ -103,18 +106,32 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         
         // Khởi tạo thành phần lọc
         JLabel lblThoiGian = new JLabel("Thời gian:");
-        cboThoiGian = new JComboBox<>(new String[]{"08/04/2025"});
+        cboThoiGian = new JComboBox<>(new String[]{"Hôm nay", "Tuần này", "Tháng này", "Tùy chỉnh"});
         cboThoiGian.setPreferredSize(new Dimension(150, 25));
         
         lblTu = new JLabel("Từ:");
-        cboTuNgay = new JComboBox<>(new String[]{"08/04/2025"});
-        cboTuNgay.setPreferredSize(new Dimension(150, 25));
+        dateFrom = new JDateChooser();
+        dateFrom.setPreferredSize(new Dimension(150, 25));
+        // Đặt ngày mặc định là 08/04/2025
+        try {
+            Date defaultDate = new SimpleDateFormat("dd/MM/yyyy").parse("08/04/2025");
+            dateFrom.setDate(defaultDate);
+        } catch (Exception e) {
+            dateFrom.setDate(new Date()); // Nếu lỗi, dùng ngày hiện tại
+        }
         
         lblDen = new JLabel("Đến:");
-        cboDenNgay = new JComboBox<>(new String[]{"08/04/2025"});
-        cboDenNgay.setPreferredSize(new Dimension(150, 25));
+        dateTo = new JDateChooser();
+        dateTo.setPreferredSize(new Dimension(150, 25));
+        // Đặt ngày mặc định là 08/04/2025
+        try {
+            Date defaultDate = new SimpleDateFormat("dd/MM/yyyy").parse("08/04/2025");
+            dateTo.setDate(defaultDate);
+        } catch (Exception e) {
+            dateTo.setDate(new Date()); // Nếu lỗi, dùng ngày hiện tại
+        }
         
-        btnApDung = taoNut("Áp Dụng", mainBlue);
+        btnApDung = taoNut("Áp Dụng", titleCyan);
         btnApDung.setPreferredSize(new Dimension(100, 25));
 
         btnLamMoi = taoNut("Làm Mới", greenColor);
@@ -136,7 +153,7 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         panelBieuDo.setBackground(Color.WHITE);
         
         panelBieuDoDoanhThu = taoBieuDo("Biểu đồ doanh thu theo thời gian");
-        cboBieuDo = new JComboBox<>();
+        cboBieuDo = new JComboBox<>(new String[]{"Cột", "Đường", "Tròn"});
         panelPhanBoChuyenDi = taoBieuDo("Phân bố chuyến đi");
         
         // Khởi tạo panel chi tiết
@@ -199,9 +216,9 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         JPanel pnlTuDen = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         pnlTuDen.setBackground(Color.WHITE);
         pnlTuDen.add(lblTu);
-        pnlTuDen.add(cboTuNgay);
+        pnlTuDen.add(dateFrom); // Thay cboTuNgay bằng dateFrom
         pnlTuDen.add(lblDen);
-        pnlTuDen.add(cboDenNgay);
+        pnlTuDen.add(dateTo);   // Thay cboDenNgay bằng dateTo
         
         JPanel pnlButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         pnlButtons.setBackground(Color.WHITE);
@@ -406,7 +423,7 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         tab.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 8));
         
         if (active) {
-            tab.setBackground(mainBlue);
+            tab.setBackground(titleCyan);
             tab.setBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.LIGHT_GRAY));
         } else {
             tab.setBackground(Color.WHITE);
@@ -448,7 +465,34 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
     
     private void capNhatThoiGianCapNhat() {
         JLabel lblCapNhat = (JLabel) panelTieuDe.getComponent(1);
-        lblCapNhat.setText("Cập nhật lần cuối: 08/04/2025 05:55");
+        lblCapNhat.setText("Cập nhật lần cuối: " + new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date()));
+    }
+    
+    // Cập nhật dữ liệu thống kê (giả lập)
+    private void capNhatDuLieuThongKe(Date tuNgay, Date denNgay) {
+        // Giả lập dữ liệu dựa trên khoảng thời gian
+        long doanhThu = 845230000 + (long)(Math.random() * 100000000); // Ngẫu nhiên ±100 triệu
+        int chuyenDi = 5287 + (int)(Math.random() * 1000); // Ngẫu nhiên ±1000 chuyến
+        double trungBinh = doanhThu / (double)chuyenDi;
+        long phiDichVu = (long)(doanhThu * 0.2); // 20% doanh thu
+        
+        panelDoanhThu = taoThongKe("TỔNG DOANH THU", dinhDangTien.format(doanhThu), greenColor);
+        panelChuyenDi = taoThongKe("TỔNG CHUYẾN ĐI", String.valueOf(chuyenDi), blueColor);
+        panelTrungBinh = taoThongKe("TRUNG BÌNH/CHUYẾN", dinhDangTien.format(trungBinh) + "đ", orangeColor);
+        panelPhiDichVu = taoThongKe("PHÍ DỊCH VỤ", dinhDangTien.format(phiDichVu), purpleColor);
+        
+        // Cập nhật panel thống kê
+        panelThongKe.removeAll();
+        panelThongKe.add(panelDoanhThu);
+        panelThongKe.add(panelChuyenDi);
+        panelThongKe.add(panelTrungBinh);
+        panelThongKe.add(panelPhiDichVu);
+        
+        panelThongKe.revalidate();
+        panelThongKe.repaint();
+        
+        // Cập nhật thời gian
+        capNhatThoiGianCapNhat();
     }
     
     @Override
@@ -456,19 +500,58 @@ public class QuanLyDoanhThuView extends FrameMain implements ActionListener {
         Object source = e.getSource();
         if (source == btnApDung) {
             // Xử lý sự kiện nút Áp dụng
+            String thoiGian = (String) cboThoiGian.getSelectedItem();
+            Date tuNgay = dateFrom.getDate(); // Lấy ngày từ JDateChooser
+            Date denNgay = dateTo.getDate();  // Lấy ngày từ JDateChooser
+            
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            if ("Tùy chỉnh".equals(thoiGian)) {
+                if (tuNgay != null && denNgay != null) {
+                    capNhatDuLieuThongKe(tuNgay, denNgay);
+                    JOptionPane.showMessageDialog(this, "Đã áp dụng lọc từ " + dateFormat.format(tuNgay) + " đến " + dateFormat.format(denNgay), "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                // Giả lập khoảng thời gian mặc định nếu không chọn "Tùy chỉnh"
+                try {
+                    Date defaultStart = dateFormat.parse("01/04/2025");
+                    Date defaultEnd = dateFormat.parse("08/04/2025");
+                    capNhatDuLieuThongKe(defaultStart, defaultEnd);
+                    JOptionPane.showMessageDialog(this, "Đã áp dụng lọc cho " + thoiGian, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Lỗi khi áp dụng lọc mặc định!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         } else if (source == btnLamMoi) {
             // Xử lý sự kiện nút Làm mới
+            cboThoiGian.setSelectedIndex(0);
+            try {
+                Date defaultDate = new SimpleDateFormat("dd/MM/yyyy").parse("08/04/2025");
+                dateFrom.setDate(defaultDate);
+                dateTo.setDate(defaultDate);
+            } catch (Exception ex) {
+                dateFrom.setDate(new Date());
+                dateTo.setDate(new Date());
+            }
+            try {
+                Date defaultStart = new SimpleDateFormat("dd/MM/yyyy").parse("01/04/2025");
+                Date defaultEnd = new SimpleDateFormat("dd/MM/yyyy").parse("08/04/2025");
+                capNhatDuLieuThongKe(defaultStart, defaultEnd);
+            } catch (Exception ex) {
+                capNhatDuLieuThongKe(new Date(), new Date());
+            }
+            JOptionPane.showMessageDialog(this, "Đã làm mới dữ liệu!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == btnExcel) {
-            // Xử lý sự kiện nút Excel
+            JOptionPane.showMessageDialog(this, "Chức năng xuất Excel chưa được triển khai!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == btnPDF) {
-            // Xử lý sự kiện nút PDF
+            JOptionPane.showMessageDialog(this, "Chức năng xuất PDF chưa được triển khai!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == btnIn) {
-            // Xử lý sự kiện nút In
+            JOptionPane.showMessageDialog(this, "Chức năng in chưa được triển khai!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == btnGui) {
-            // Xử lý sự kiện nút Gửi
+            JOptionPane.showMessageDialog(this, "Chức năng gửi email chưa được triển khai!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } else if (source == btnThoat) {
-            // Xử lý sự kiện nút Thoát
-            this.dispose(); // Đóng form hiện tại
+            this.dispose();
         }
     }
     
