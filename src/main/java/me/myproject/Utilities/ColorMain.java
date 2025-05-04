@@ -13,6 +13,7 @@ public class ColorMain {
         public static Color colorBlue1 = new Color(255, 255, 255, 245);
         public static Color blueHeader = new Color(20, 180, 180);//header của các giao diện
         public static Color btnHeader = new Color(0, 178, 192);
+        public static Color btnHeader1 = new Color(0, 150, 136);
         public static Color blueMenuLeft = new Color(25, 37, 60); //Xanh đậm của menu trái
         // public static Color colorPrimary=new Color(137,217 ,202 );
         // public static Color colorSecondary=new Color(247,239 ,218 );
