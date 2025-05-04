@@ -1,25 +1,25 @@
 
 package model;
 public class TaiKhoan {
-    private String userName;
-    private String passWord;
+    private String SDT;
+    private String matKhau;
     private String ID_VaiTro;
-    private String ID_Ref;
+    private String ID_NguoiDung;
 
     public String getUserName() {
-        return userName;
+        return SDT;
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.SDT = userName;
     }
 
-    public String getPassWord() {
-        return passWord;
+    public String getMatKhau() {
+        return matKhau;
     }
 
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
+    public void setMatKhau(String matKhau) {
+        this.matKhau = matKhau;
     }
 
     public String getID_VaiTro() {
@@ -30,19 +30,19 @@ public class TaiKhoan {
         ID_VaiTro = iD_VaiTro;
     }
 
-    public String getID_Ref() {
-        return ID_Ref;
+    public String getID_NguoiDung() {
+        return ID_NguoiDung;
     }
 
-    public void setID_Ref(String iD_Ref) {
-        ID_Ref = iD_Ref;
+    public void setID_NguoiDung(String ID_NguoiDung) {
+       this.ID_NguoiDung = ID_NguoiDung;
     }
 
-    public TaiKhoan(String userName, String passWord, String ID_VaiTro, String ID_Ref) {
-        this.userName = userName;
-        this.passWord = passWord;
+    public TaiKhoan(String userName, String matKhau, String ID_VaiTro, String ID_NguoiDung) {
+        this.SDT = userName;
+        this.matKhau = matKhau;
         this.ID_VaiTro = ID_VaiTro;
-        this.ID_Ref = ID_Ref;
+        this.ID_NguoiDung = ID_NguoiDung;
     }
 
 	public TaiKhoan() {
@@ -53,10 +53,10 @@ public class TaiKhoan {
 	public String toString() {
 		String json = String.format("{\n"
 				+ "                \"userName\": \"%s\",\n"
-				+ "                \"passWord\": %s,\n"
+				+ "                \"matKhau\": %s,\n"
 				+ "                \"id_VaiTro\":\"%s\",\n"
-				+ "                \"id_Ref\": %s\n"
-				+ "                }",this.userName, this.passWord,this.ID_VaiTro,this.ID_Ref);
+				+ "                \"ID_NguoiDung\": %s\n"
+				+ "                }",this.SDT, this.matKhau,this.ID_VaiTro,this.ID_NguoiDung);
 		return json;
 		
 	}

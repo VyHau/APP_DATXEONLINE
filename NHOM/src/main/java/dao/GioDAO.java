@@ -1,10 +1,8 @@
 package dao;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import dao.AbstractDAO.RowMapper;
 import model.Gio;
 
 public class GioDAO extends AbstractDAO<Gio> implements InterfaceDAO<Gio>{
@@ -46,19 +44,16 @@ public class GioDAO extends AbstractDAO<Gio> implements InterfaceDAO<Gio>{
 	}
 
 	@Override
-	public List<Gio> selectByCondition() {
+	public List<Gio> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	private final RowMapper<Gio> gioMapper = new RowMapper<Gio>() {
-        @Override
-        public Gio mapRow(ResultSet rs) throws SQLException {
+	private final RowMapper<Gio> gioMapper = (ResultSet rs) -> {
             Gio obj = new Gio();
             obj.setID_Gio(rs.getString("ID_GIO"));
             obj.setThoiGianBatDau(rs.getTime("THOIGIANBATDAU"));
             obj.setThoiGianKetThuc(rs.getTime("THOIGIANKETTHUC"));
             return obj;
-        }
-    };
+        };
 
 }

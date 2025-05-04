@@ -1,5 +1,8 @@
 package service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 
 import dao.TaiKhoanDAO;
@@ -25,6 +28,18 @@ public class TaiKhoanService {
 	}
 	public TaiKhoan signIn(TaiKhoan taiKhoan) 
 	{
-		return taiKhoanDAO.signIn(taiKhoan.getUserName(), taiKhoan.getPassWord());
+		return taiKhoanDAO.signIn(taiKhoan.getUserName(),taiKhoan.getMatKhau(), taiKhoan.getID_VaiTro());
+	}
+	public Boolean kiemTraTrangThai(String userName,String idVaiTro) throws SQLException {
+		return taiKhoanDAO.kiemTraTTTK(userName,idVaiTro);
+	}
+	public HashMap<String, String> mo_KhoaTaiKhoan(String id,boolean trangThai) throws SQLException {
+		HashMap<String, String> map=new HashMap<>();
+		ResultSet rs=taiKhoanDAO.mo_KhoaTaiKhoan(id, trangThai);
+		while (rs.next()) {
+			map.put("status",rs.getString("status"));
+			map.put("message",rs.getString("message"));
+		}
+		return map;
 	}
 }

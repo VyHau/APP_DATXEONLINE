@@ -2,10 +2,9 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
-import dao.AbstractDAO.RowMapper;
-import model.TaiKhoan;
 import model.TaiKhoan;
 
 public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<TaiKhoan>{
@@ -14,7 +13,7 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 	public int insert(TaiKhoan obj) {
 		String sql = "INSERT INTO TAIKHOAN (USERNAME, PASS_WORD,ID_VAITRO,REF_ID) VALUES\n"
 				+ "(?,?,?,?)";
-		Object[] params= {obj.getUserName(),obj.getPassWord(),obj.getID_VaiTro(),obj.getID_Ref()};
+		Object[] params= {obj.getUserName(),obj.getMatKhau(),obj.getID_VaiTro(),obj.getID_NguoiDung()};
 		return executeUpdate(sql, params);
 	}
 
@@ -22,7 +21,7 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 	public int update(TaiKhoan obj) {
 		String sql = "UPDATE TAIKHOAN SET  PASS_WORD=?,REF_ID=? WHERE USERNAME=? AND ID_VAITRO=?"
 				+ "(?,?,?,?)";
-		Object[] params= {obj.getPassWord(),obj.getID_Ref(),obj.getUserName(),obj.getID_VaiTro()};
+		Object[] params= {obj.getMatKhau(),obj.getID_NguoiDung(),obj.getUserName(),obj.getID_VaiTro()};
 		return executeUpdate(sql, params);
 	}
 
@@ -47,25 +46,34 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 	}
 
 	@Override
-	public List<TaiKhoan> selectByCondition() {
+	public List<TaiKhoan> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	public TaiKhoan signIn(String id,String pass) {
-		String sql = "SELECT * FROM TAIKHOAN WHERE USERNAME=? AND PASS_WORD=?";
-		Object[] params= {id,pass};
+	public ResultSet mo_KhoaTaiKhoan(String userName,boolean trangThai) throws SQLException{
+		String sql="Pr_MoKhoaTaiKhoan";
+		Object [] params= {userName,trangThai};
+		
+		return callProcedureResultSet(sql, params);
+	}
+	public Boolean kiemTraTTTK(String userName,String idVaiTro) {
+		String sql="Fn_KiemTraTTTK";
+		Object[] params= {userName,idVaiTro};
+		
+		return (Boolean) callFunction(sql, params, Types.BOOLEAN);
+	}
+	public TaiKhoan signIn(String sdt,String pass,String vaitro) {
+		String sql = "SELECT * FROM TAIKHOAN WHERE SDT=? AND ID_VAITRONO=? AND MATKHAU=?";
+		Object[] params= {sdt,vaitro,pass};
 		return executeQuery(sql, params, taiKhoanMapper);
 	}
-	 private final RowMapper<TaiKhoan> taiKhoanMapper = new RowMapper<TaiKhoan>() {
-	        @Override
-	        public TaiKhoan mapRow(ResultSet rs) throws SQLException {
-	            TaiKhoan obj = new TaiKhoan();
-	            obj.setUserName(rs.getString("USERNAME"));
-	            obj.setPassWord(rs.getString("PASS_WORD"));
-	            obj.setID_VaiTro(rs.getString("ID_VAITRO"));
-	            obj.setID_Ref(rs.getString("REF_ID"));
-	            return obj;
-	        }
-	    };
+	 private final RowMapper<TaiKhoan> taiKhoanMapper = (ResultSet rs) -> {
+             TaiKhoan obj = new TaiKhoan();
+             obj.setUserName(rs.getString("SDT"));
+             obj.setMatKhau(rs.getString("MATKHAU"));
+             obj.setID_VaiTro(rs.getString("ID_VAITRONO"));
+             obj.setID_NguoiDung(rs.getString("ID_NGUOIDUNG"));
+             return obj;
+        };
 
 }

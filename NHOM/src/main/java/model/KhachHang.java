@@ -5,12 +5,22 @@ public class KhachHang {
     private String TENKH;
     private String SDT;
     private String DIACHI;
+    private String MATKHAU;
 
-    public KhachHang(String ID_KhachHang, String tenKhachHang, String SDT, String diaChi) {
+    public String getMATKHAU() {
+        return MATKHAU;
+    }
+
+    public void setMATKHAU(String mATKHAU) {
+        MATKHAU = mATKHAU;
+    }
+
+    public KhachHang(String ID_KhachHang, String tenKhachHang, String SDT, String diaChi, String matKhau) {
         this.ID_KH = ID_KhachHang;
         this.TENKH = tenKhachHang;
         this.SDT = SDT;
         this.DIACHI = diaChi;
+        this.MATKHAU = matKhau;
     }
 
     public KhachHang() {

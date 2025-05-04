@@ -1,11 +1,8 @@
 package dao;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import dao.AbstractDAO.RowMapper;
-import model.LoaiXe;
 import model.LoaiXe;
 
 public class LoaiXeDAO extends AbstractDAO<LoaiXe> implements InterfaceDAO<LoaiXe>{
@@ -47,19 +44,16 @@ public class LoaiXeDAO extends AbstractDAO<LoaiXe> implements InterfaceDAO<LoaiX
 	}
 
 	@Override
-	public List<LoaiXe> selectByCondition() {
+	public List<LoaiXe> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	 private final RowMapper<LoaiXe> loaiXeMapper = new RowMapper<LoaiXe>() {
-	        @Override
-	        public LoaiXe mapRow(ResultSet rs) throws SQLException {
-	            LoaiXe obj = new LoaiXe();
-	            obj.setID_LoaiXe(rs.getString("ID_LOAIXE"));
-	            obj.setTenLoaiXe(rs.getString("TENLOAIXE"));
-	            obj.setGia1KM(rs.getDouble("GIA1KM"));
-	            return obj;
-	        }
-	    };
+	 private final RowMapper<LoaiXe> loaiXeMapper = (ResultSet rs) -> {
+             LoaiXe obj = new LoaiXe();
+             obj.setID_LoaiXe(rs.getString("ID_LOAIXE"));
+             obj.setTenLoaiXe(rs.getString("TENLOAIXE"));
+             obj.setGia1KM(rs.getDouble("GIA1KM"));
+             return obj;
+        };
 	
 }

@@ -45,10 +45,23 @@ public class KhachHangDAO extends AbstractDAO<KhachHang> implements InterfaceDAO
 	}
 
 	@Override
-	public List<KhachHang> selectByCondition() {
+	public List<KhachHang> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}	
+	public int khachHangMoiThangNay() {
+		String sql="Fn_KhachHangMoiThangNay";
+		return (int) callFunction(sql, null, Types.INTEGER);
+	}
+	public double danhGiaTB() {
+		String sql="Fn_TinhDanhGiaTrungBinh";
+		return (double) callFunction(sql, null, Types.DOUBLE);
+	}
+	public double tyLeHaiLong() {
+		String sql="Fn_TyLeHaiLongCuaKhachHang";
+		return (double) callFunction(sql, null, Types.DOUBLE);
+	}
+	
 	private final RowMapper<KhachHang> khachHangMapper = new RowMapper<KhachHang>() {
 	    @Override
 	    public KhachHang mapRow(ResultSet rs) throws SQLException {

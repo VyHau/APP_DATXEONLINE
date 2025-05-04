@@ -2,13 +2,13 @@ package model;
 
 public class PhuongThucThanhToan {
     private String ID_ThanhToan;
-    private String loaiHinhThucThanhToan;
-    private boolean trangThaiThanhToan;
+    private String loaiHinhThanhToan;
+    private boolean trangThaiTT;
 
-    public PhuongThucThanhToan(String ID_ThanhToan, String loaiHinhThucThanhToan, boolean trangThaiThanhToan) {
+    public PhuongThucThanhToan(String ID_ThanhToan, String loaiHinhThanhToan, boolean trangThaiTT) {
         this.ID_ThanhToan = ID_ThanhToan;
-        this.loaiHinhThucThanhToan = loaiHinhThucThanhToan;
-        this.trangThaiThanhToan = trangThaiThanhToan;
+        this.loaiHinhThanhToan = loaiHinhThanhToan;
+        this.trangThaiTT = trangThaiTT;
     }
 
     public PhuongThucThanhToan() {
@@ -23,20 +23,20 @@ public class PhuongThucThanhToan {
         this.ID_ThanhToan = ID_ThanhToan;
     }
 
-    public String getLoaiHinhThucThanhToan() {
-        return loaiHinhThucThanhToan;
+    public String getLoaiHinhThanhToan() {
+        return loaiHinhThanhToan;
     }
 
-    public void setLoaiHinhThucThanhToan(String loaiHinhThucThanhToan) {
-        this.loaiHinhThucThanhToan = loaiHinhThucThanhToan;
+    public void setLoaiHinhThanhToan(String loaiHinhThanhToan) {
+        this.loaiHinhThanhToan = loaiHinhThanhToan;
     }
 
-    public boolean isTrangThaiThanhToan() {
-        return trangThaiThanhToan;
+    public boolean isTrangThaiTT() {
+        return trangThaiTT;
     }
 
-    public void setTrangThaiThanhToan(boolean trangThaiThanhToan) {
-        this.trangThaiThanhToan = trangThaiThanhToan;
+    public void setTrangThaiTT(boolean trangThaiTT) {
+        this.trangThaiTT = trangThaiTT;
     }
     
 }

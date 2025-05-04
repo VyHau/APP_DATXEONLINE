@@ -11,7 +11,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.KhachHang;
 import model.TaiKhoan;
 import service.TaiKhoanService;
 import utils.JsonUtil;
@@ -20,12 +19,12 @@ import utils.JsonUtil;
 public class TaiKhoanController extends HttpServlet{
 	
 	private static final long serialVersionUID = 1L;
-	private TaiKhoanService taiKhoanService=new TaiKhoanService();
-	private ObjectMapper mapper=new ObjectMapper();
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		
-	}
+	private final TaiKhoanService taiKhoanService=new TaiKhoanService();
+	private final ObjectMapper mapper=new ObjectMapper();
+//	@Override
+//	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//		
+//	}
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("application/json");

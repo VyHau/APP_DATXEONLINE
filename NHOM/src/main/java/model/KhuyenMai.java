@@ -1,25 +1,25 @@
 
 package model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class KhuyenMai {
     private String ID_KhuyenMai;
-    private String tenKhuyenMai;
+    private String tenKM;
     private double hanMuc;
-    private Date thoiGianBatDau;
-    private Date thoiGianKetThuc;
+    private Timestamp tgBatDau;
+    private Timestamp tgKetThuc;
     private String dieuKienApDung;
     private int soLuong;
 
-    public KhuyenMai(String ID_KhuyenMai, String tenKhuyenMai, double hanMuc,Date thoiGianBatDau, Date thoiGianKetThuc,String dieuKienApDung,int soLuong) {
+    public KhuyenMai(String ID_KhuyenMai, String tenKM, double hanMuc,Timestamp tgBatDau, Timestamp tgKetThuc,String dieuKienApDung,int soLuong) {
         this.ID_KhuyenMai = ID_KhuyenMai;
         this.dieuKienApDung = dieuKienApDung;
         this.hanMuc = hanMuc;
         this.soLuong = soLuong;
-        this.tenKhuyenMai = tenKhuyenMai;
-        this.thoiGianBatDau = thoiGianBatDau;
-        this.thoiGianKetThuc = thoiGianKetThuc;
+        this.tenKM = tenKM;
+        this.tgBatDau = tgBatDau;
+        this.tgKetThuc = tgKetThuc;
     }
 
     
@@ -38,12 +38,12 @@ public class KhuyenMai {
         this.ID_KhuyenMai = ID_KhuyenMai;
     }
 
-    public String getTenKhuyenMai() {
-        return tenKhuyenMai;
+    public String getTenKM() {
+        return tenKM;
     }
 
-    public void setTenKhuyenMai(String tenKhuyenMai) {
-        this.tenKhuyenMai = tenKhuyenMai;
+    public void setTenKM(String tenKM) {
+        this.tenKM = tenKM;
     }
 
     public double getHanMuc() {
@@ -54,20 +54,20 @@ public class KhuyenMai {
         this.hanMuc = hanMuc;
     }
 
-    public Date getThoiGianBatDau() {
-        return thoiGianBatDau;
+    public Timestamp getTGBatDau() {
+        return tgBatDau;
     }
 
-    public void setThoiGianBatDau(Date thoiGianBatDau) {
-        this.thoiGianBatDau = thoiGianBatDau;
+    public void setTGBatDau(Timestamp tgBatDau) {
+        this.tgBatDau = tgBatDau;
     }
 
-    public Date getThoiGianKetThuc() {
-        return thoiGianKetThuc;
+    public Timestamp getTGKetThuc() {
+        return tgKetThuc;
     }
 
-    public void setThoiGianKetThuc(Date thoiGianKetThuc) {
-        this.thoiGianKetThuc = thoiGianKetThuc;
+    public void setTGKetThuc(Timestamp tgKetThuc) {
+        this.tgKetThuc = tgKetThuc;
     }
 
     public String getDieuKienApDung() {

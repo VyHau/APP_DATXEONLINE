@@ -8,29 +8,19 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import dao.GioDAO;
-import dao.KhuyenMaiDAO;
-import dao.LoaiXeDAO;
-import dao.PhuongThucThanhToanDAO;
-import dao.TaiKhoanDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.Gio;
 import model.KhachHang;
-import model.KhuyenMai;
-import model.LoaiXe;
-import model.PhuongThucThanhToan;
-import model.TaiKhoan;
 import service.KhachHangService;
 import utils.JsonUtil;
 
 @WebServlet("/api-users")
 public class KhachHangController extends HttpServlet {
     private static final long serialVersionUID = 1L;
-	private KhachHangService khachHangService = new KhachHangService();
+	private final KhachHangService khachHangService = new KhachHangService();
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

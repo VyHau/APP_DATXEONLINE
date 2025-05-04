@@ -1,11 +1,8 @@
 package dao;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import dao.AbstractDAO.RowMapper;
-import model.KhuyenMai;
 import model.KhuyenMai;
 
 public class KhuyenMaiDAO extends AbstractDAO<KhuyenMai> implements InterfaceDAO<KhuyenMai> {
@@ -14,7 +11,7 @@ public class KhuyenMaiDAO extends AbstractDAO<KhuyenMai> implements InterfaceDAO
 	public int insert(KhuyenMai obj) {
 		String sql="INSERT INTO KHUYENMAI (ID_KHUYENMAI, TENKM, HANMUC, TGBATDAU, TGKETTHUC, DIEUKIENAPDUNG, SOLUONG) VALUES\n"
 				+ "(?,?,?,?,?,?,?)";
-		Object[] params = {obj.getID_KhuyenMai(),obj.getTenKhuyenMai(),obj.getHanMuc(),obj.getThoiGianBatDau(),obj.getThoiGianKetThuc(),obj.getDieuKienApDung(),obj.getSoLuong()};
+		Object[] params = {obj.getID_KhuyenMai(),obj.getTenKM(),obj.getHanMuc(),obj.getTGBatDau(),obj.getTGKetThuc(),obj.getDieuKienApDung(),obj.getSoLuong()};
 		return executeUpdate(sql, params);
 	}
 
@@ -22,7 +19,7 @@ public class KhuyenMaiDAO extends AbstractDAO<KhuyenMai> implements InterfaceDAO
 	public int update(KhuyenMai obj) {
 		String sql="UPDATE KHUYENMAI SET TENKM=?, HANMUC=?, TGBATDAU=?, TGKETTHUC=?, DIEUKIENAPDUNG=?, SOLUONG=? WHERE ID_KHUYENMAI=?"
 				+ "(?,?,?,?,?,?,?)";
-		Object[] params = {obj.getTenKhuyenMai(),obj.getHanMuc(),obj.getThoiGianBatDau(),obj.getThoiGianKetThuc(),obj.getDieuKienApDung(),obj.getSoLuong(),obj.getID_KhuyenMai()};
+		Object[] params = {obj.getTenKM(),obj.getHanMuc(),obj.getTGBatDau(),obj.getTGKetThuc(),obj.getDieuKienApDung(),obj.getSoLuong(),obj.getID_KhuyenMai()};
 		return executeUpdate(sql, params);
 	}
 
@@ -36,7 +33,7 @@ public class KhuyenMaiDAO extends AbstractDAO<KhuyenMai> implements InterfaceDAO
 
 	@Override
 	public KhuyenMai selectById(String id) {
-		String sql="SELECT * FROM KHUYENMAI WHERE ID_KHUYEMAI=?";
+		String sql="SELECT * FROM KHUYENMAI WHERE ID_KHUYENMAI=?";
 		Object[] params= {id};
 		return executeQuery(sql, params, khuyenMaiMapper);
 	}
@@ -48,23 +45,20 @@ public class KhuyenMaiDAO extends AbstractDAO<KhuyenMai> implements InterfaceDAO
 	}
 
 	@Override
-	public List<KhuyenMai> selectByCondition() {
+	public List<KhuyenMai> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	 private final RowMapper<KhuyenMai> khuyenMaiMapper = new RowMapper<KhuyenMai>() {
-	        @Override
-	        public KhuyenMai mapRow(ResultSet rs) throws SQLException {
-	            KhuyenMai obj = new KhuyenMai();
-	            obj.setID_KhuyenMai(rs.getString("ID_KHUYENMAI"));
-	            obj.setTenKhuyenMai(rs.getString("TENKM"));
-	            obj.setHanMuc(rs.getDouble("HANMUC"));
-	            obj.setThoiGianBatDau(rs.getDate("TGBATDAU"));
-	            obj.setThoiGianKetThuc(rs.getDate("TGKETTHUC"));
-	            obj.setDieuKienApDung(rs.getString("DIEUKIENAPDUNG"));
-	            obj.setSoLuong(rs.getInt("SOLUONG"));
-	            return obj;
-	        }
-	    };
+	 private final RowMapper<KhuyenMai> khuyenMaiMapper = (ResultSet rs) -> {
+             KhuyenMai obj = new KhuyenMai();
+             obj.setID_KhuyenMai(rs.getString("ID_KHUYENMAI"));
+             obj.setTenKM(rs.getString("TENKM"));
+             obj.setHanMuc(rs.getDouble("HANMUC"));
+             obj.setTGBatDau(rs.getTimestamp("TGBATDAU"));
+             obj.setTGKetThuc(rs.getTimestamp("TGKETTHUC"));
+             obj.setDieuKienApDung(rs.getString("DIEUKIENAPDUNG"));
+             obj.setSoLuong(rs.getInt("SOLUONG"));
+             return obj;
+        };
 
 }

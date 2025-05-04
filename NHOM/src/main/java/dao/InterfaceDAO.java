@@ -8,6 +8,6 @@ public interface InterfaceDAO<T> {
 	public int delete(String id);
 	public T selectById(String id);
 	public List<T> selectAll(); 
-	public List<T> selectByCondition();
+	public List<T> selectByCondition(String condition,Object[] params);
 	
 }
