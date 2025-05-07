@@ -1,33 +1,35 @@
 package me.myproject.MODEL;
 
-import java.util.Date;
+import java.sql.Timestamp;
+
 public class DatXe {
-    private String ID_DatXe;
+	private String ID_DatXe;
     private String ID_KH;
     private String ID_TX;
     private String ID_ThanhToan;
     private String ID_KhuyenMai;
     private String DiemTra;
     private String DiemDon;
-    private Date thoiGianDat;
-    private Date thoiGianDon;
-    private Date thoiGianDen;
+    private Double GiaTien;
+    private Timestamp thoiGianDat;
+    private Timestamp thoiGianDon;
+    private Timestamp thoiGianDen;
     private String trangThai;
     private double khoangCach;
     private int diemSo;
     private String danhGia;
 
-    public DatXe(){};
-    public DatXe(String ID_DatXe, String ID_KH, String ID_TX, String ID_ThanhToan, String ID_KhuyenMai,
-             String DiemTra, String DiemDon, Date thoiGianDat, Date thoiGianDon, Date thoiGianDen,
+    public DatXe(String ID_ChuyenXe, String ID_KhachHang, String ID_TaiXe, String ID_ThanhToan, String ID_KhuyenMai,
+             String DiemTra, String DiemDon, Double GiaTien,Timestamp thoiGianDat, Timestamp thoiGianDon, Timestamp thoiGianDen,
             String trangThai, double khoangCach, int diemSo, String danhGia) {
-        this.ID_DatXe = ID_DatXe;
-        this.ID_KH = ID_KH;
-        this.ID_TX = ID_TX;
+        this.ID_DatXe = ID_ChuyenXe;
+        this.ID_KH = ID_KhachHang;
+        this.ID_TX = ID_TaiXe;
         this.ID_ThanhToan = ID_ThanhToan;
         this.ID_KhuyenMai = ID_KhuyenMai;
         this.DiemTra = DiemTra;
         this.DiemDon = DiemDon;
+        this.GiaTien = GiaTien;
         this.thoiGianDat = thoiGianDat;
         this.thoiGianDon = thoiGianDon;
         this.thoiGianDen = thoiGianDen;
@@ -38,28 +40,16 @@ public class DatXe {
 
     }
 
-    public String getID_DatXe() {
+    public DatXe() {
+		
+	}
+
+	public String getID_DatXe() {
         return ID_DatXe;
     }
 
-    public void setID_DatXe(String ID_DatXe) {
-        this.ID_DatXe = ID_DatXe;
-    }
-
-    public String getID_KH() {
-        return ID_KH;
-    }
-
-    public void setID_KH(String ID_KH) {
-        this.ID_KH = ID_KH;
-    }
-
-    public String getID_TX() {
-        return ID_TX;
-    }
-
-    public void setID_TX(String ID_TX) {
-        this.ID_TX = ID_TX;
+    public void setID_DatXe(String ID_ChuyenXe) {
+        this.ID_DatXe = ID_ChuyenXe;
     }
 
     public String getID_ThanhToan() {
@@ -95,27 +85,27 @@ public class DatXe {
         this.DiemDon = DiemDon;
     }
 
-    public Date getThoiGianDat() {
+    public Timestamp getThoiGianDat() {
         return thoiGianDat;
     }
 
-    public void setThoiGianDat(Date thoiGianDat) {
+    public void setThoiGianDat(java.sql.Timestamp thoiGianDat) {
         this.thoiGianDat = thoiGianDat;
     }
 
-    public Date getThoiGianDon() {
+    public Timestamp getThoiGianDon() {
         return thoiGianDon;
     }
 
-    public void setThoiGianDon(Date thoiGianDon) {
+    public void setThoiGianDon(Timestamp thoiGianDon) {
         this.thoiGianDon = thoiGianDon;
     }
 
-    public Date getThoiGianDen() {
+    public Timestamp getThoiGianDen() {
         return thoiGianDen;
     }
 
-    public void setThoiGianDen(Date thoiGianDen) {
+    public void setThoiGianDen(Timestamp thoiGianDen) {
         this.thoiGianDen = thoiGianDen;
     }
 
@@ -150,5 +140,29 @@ public class DatXe {
     public void setDanhGia(String danhGia) {
         this.danhGia = danhGia;
     }
-    
+
+    public String getID_KH() {
+        return ID_KH;
+    }
+
+    public void setID_KH(String iD_KH) {
+        ID_KH = iD_KH;
+    }
+
+    public String getID_TX() {
+        return ID_TX;
+    }
+
+    public void setID_TX(String iD_TX) {
+        ID_TX = iD_TX;
+    }
+
+    public Double getGiaTien() {
+        return GiaTien;
+    }
+
+    public void setGiaTien(Double giaTien) {
+        GiaTien = giaTien;
+    }
+
 }
