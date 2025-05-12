@@ -1,12 +1,18 @@
 package me.myproject.Utilities;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 public class APIHelper {
     private static final Gson gson = new Gson();
@@ -22,6 +28,10 @@ public class APIHelper {
     public static Map<String, Object> postForMap(String apiUrl, Object requestBody) throws IOException {
         String jsonInput = gson.toJson(requestBody);
         String responseJson = doPost(apiUrl, jsonInput);
+        // Kiểm tra xem phản hồi có phải là đối tượng JSON không
+        if (!responseJson.trim().startsWith("{")) {
+            throw new IOException("API trả về phản hồi không phải JSON object: " + responseJson);
+        }
         Type type = new TypeToken<Map<String, Object>>(){}.getType();
         return gson.fromJson(responseJson, type);
     }
@@ -30,6 +40,17 @@ public class APIHelper {
     public static <T> T fetchList(String apiUrl, Type typeOfT) throws IOException {
         String responseJson = doGet(apiUrl);
         return gson.fromJson(responseJson, typeOfT);
+    }
+
+    // GET request trả về map (nhiều kiểu dữ liệu)
+    public static Map<String, Object> getForMap(String apiUrl) throws IOException {
+        String responseJson = doGet(apiUrl);
+        // Kiểm tra xem phản hồi có phải là đối tượng JSON không
+        if (!responseJson.trim().startsWith("{")) {
+            throw new IOException("API trả về phản hồi không phải JSON object: " + responseJson);
+        }
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        return gson.fromJson(responseJson, type);
     }
 
     // ----------------- Internal methods --------------------
@@ -88,5 +109,29 @@ public class APIHelper {
                 }
             }
         }
+    }
+    public static Map<String, Object> putForMap(String apiUrl, Object requestBody) throws IOException {
+        String jsonInput = gson.toJson(requestBody);
+        String responseJson = doPut(apiUrl, jsonInput);
+        if (responseJson.trim().isEmpty()) {
+            return new HashMap<>();
+        }
+        if (!responseJson.trim().startsWith("{")) {
+            throw new IOException("API trả về phản hồi không phải JSON object: " + responseJson);
+        }
+        Type type = new TypeToken<Map<String, Object>>(){}.getType();
+        return gson.fromJson(responseJson, type);
+    }
+    private static String doPut(String apiUrl, String jsonInput) throws IOException {
+        URL url = new URL(apiUrl);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("PUT");
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Content-Type", "application/json");
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = jsonInput.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+        return readResponse(conn);
     }
 }
