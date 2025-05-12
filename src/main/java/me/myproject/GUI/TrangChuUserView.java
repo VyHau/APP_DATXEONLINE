@@ -396,9 +396,15 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         if (source == btnDatXe) {
             btnDatXe.setForeground(new Color(20, 180, 180));
             // Hiển thị giao diện đặt xe
+            new DatXeView();
         } else if (source == btnHuyChuyenDi) {
             btnHuyChuyenDi.setForeground(new Color(20, 180, 180)); 
             // Hiển thị giao diện hủy chuyến đi
+            try {
+                new HuyChuyenDiView(tk);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         } else if (source == btnLichSuDiChuyen) {
             btnLichSuDiChuyen.setForeground(new Color(20, 180, 180));
             this.dispose();
@@ -425,5 +431,4 @@ public class TrangChuUserView extends FrameMain implements ActionListener {
         btnChatVoiTaiXe.setForeground(Color.WHITE);
         btnDangXuat.setForeground(new Color(255, 100, 100)); // Giữ màu đặc biệt cho nút đăng xuất
     }
-
 }
