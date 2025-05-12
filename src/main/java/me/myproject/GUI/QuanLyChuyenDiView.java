@@ -3,10 +3,10 @@ package me.myproject.GUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -18,8 +18,13 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -27,30 +32,37 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.toedter.calendar.JDateChooser;
-import me.myproject.Utilities.DIMENSION.DimensionFrame;
+
+import me.myproject.BUSINESSLOGIC.QuanLyChuyenDiBSL;
+import me.myproject.MODEL.DatXe;
 import me.myproject.Utilities.DIMENSION.FrameMain;
 
 public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
-    
+	private QuanLyChuyenDiBSL business;
     // Các panel thống kê
-    private JPanel pnlStats;
+    private JPanel pnlStats, pnlRideId;
     private JLabel lblTotalRides, lblCompletedRides, lblCanceledRides, lblTotalRevenue;
     
+    private DecimalFormat dinhDangTien = new DecimalFormat("###,###,### VNĐ");
     // Các thành phần tìm kiếm
     private JTextField txtSearch;
     private JDateChooser dateFrom, dateTo;
@@ -65,25 +77,26 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
     private JPanel pnlRideDetails;
     private JLabel lblRideId, lblRideDate, lblRideTime;
     private JLabel lblPickupLocation, lblDropLocation, lblDistance, lblDuration;
-    private JLabel lblPrice, lblStatus;
+    private JLabel lblPrice, lblStatus,lblRideIdLabel, lblRideIdValue, lblDate, lblTime, lblPickup, lblDropoff;
     
     // Thông tin khách hàng và tài xế
     private JPanel pnlCustomerInfo, pnlDriverInfo, pnlNotes;
     
     // Các nút hành động
-    private JButton btnViewDetails, btnDeleteRide, btnBatchDelete, btnExportExcel, btnPrintReport, btnExit;
+    private JButton btnViewDetails, btnDeleteRide, btnExportExcel, btnPrintReport, btnExit;
     
     // Khai báo font ở cấp độ lớp
     private final Font fontTitle = new Font("Arial", Font.BOLD, 16);
     private final Font fontBold = new Font("Arial", Font.BOLD, 14);
     private final Font fontNormal = new Font("Arial", Font.PLAIN, 14);
     
-    public QuanLyChuyenDiView() {
+    public QuanLyChuyenDiView() throws Exception {
         super("RideWave - Quản Lý Chuyến Đi");
+        business = new QuanLyChuyenDiBSL();
         init();
     }
     
-    private void init() {
+    private void init() throws Exception {
         // Ẩn các panel màu xanh ở bên trái và trên cùng
         pnL.setVisible(false);
         pnT.setVisible(false);
@@ -117,8 +130,20 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         JPanel ridesPanel = createRidesPanel();
         splitPanel.add(ridesPanel, BorderLayout.CENTER);
         
-        // Panel chi tiết chuyến đi
-        pnlRideDetails = createRideDetailsPanel();
+        // Panel chi tiết chuyến đi (khởi tạo ban đầu)
+        try {
+            business.fetchChuyenDi();
+            List<DatXe> chuyenDiList = business.getChuyenDiList();
+            if (!chuyenDiList.isEmpty()) {
+                pnlRideDetails = createRideDetailsPanel(chuyenDiList.get(0)); // Khởi tạo với chuyến xe đầu tiên
+                tblRides.setRowSelectionInterval(0, 0); // Chọn dòng đầu tiên
+            } else {
+                pnlRideDetails = createRideDetailsPanel(null); // Khởi tạo với panel rỗng nếu không có dữ liệu
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            pnlRideDetails = createRideDetailsPanel(null); // Đảm bảo khởi tạo mặc định
+        }
         splitPanel.add(pnlRideDetails, BorderLayout.EAST);
         
         centerPanel.add(splitPanel, BorderLayout.CENTER);
@@ -130,7 +155,6 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         contentPanel.add(centerPanel, BorderLayout.CENTER);
         pnC.add(contentPanel, BorderLayout.CENTER);
         
-        // Thêm các panel vào frame chính
         this.add(pnC, BorderLayout.CENTER);
         
         this.setVisible(true);
@@ -149,24 +173,24 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         return panel;
     }
     
-    private JPanel createStatsPanel() {
+    private JPanel createStatsPanel() throws Exception {
+        business.fetchChuyenDi();
         JPanel panel = new JPanel(new GridLayout(1, 4, 10, 0));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        
         // Thống kê tổng chuyến đi
-        JPanel pnlTotalRides = createStatBox("Tổng Chuyến Đi", "5,287", Color.BLACK);
+        JPanel pnlTotalRides = createStatBox("Tổng Chuyến Đi",String.valueOf(business.calculateTotalTrips()), Color.BLACK);
         panel.add(pnlTotalRides);
         
         // Thống kê chuyến đi hoàn thành
-        JPanel pnlCompletedRides = createStatBox("Hoàn Thành", "4,821", new Color(40, 167, 69));
+        JPanel pnlCompletedRides = createStatBox("Hoàn Thành", String.valueOf(business.calculateCompletedTrips()), new Color(40, 167, 69));
         panel.add(pnlCompletedRides);
         
         // Thống kê chuyến đi đã hủy
-        JPanel pnlCanceledRides = createStatBox("Đã Hủy", "466", Color.RED);
+        JPanel pnlCanceledRides = createStatBox("Đã Hủy", String.valueOf(business.calculateCanceledTrips()), Color.RED);
         panel.add(pnlCanceledRides);
         
         // Thống kê tổng doanh thu
-        JPanel pnlTotalRevenue = createStatBox("Tổng Doanh Thu", "845.2tr", Color.BLUE);
+        JPanel pnlTotalRevenue = createStatBox("Tổng Doanh Thu", String.valueOf(dinhDangTien.format(business.calculateTotalRevenue())), Color.BLUE);
         panel.add(pnlTotalRevenue);
         
         return panel;
@@ -268,10 +292,10 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         JLabel lblFilter = new JLabel("Bộ lọc:");
         
         // Khởi tạo combobox lọc
-        cboFilter1 = new JComboBox<>(new String[]{"Tất cả trạng thái", "Hoàn thành", "Đã hủy", "Đang xử lý"});
+        cboFilter1 = new JComboBox<>(new String[]{"Tất cả trạng thái", "Hoàn thành", "Đã huỷ", "Đang xử lý", "Đang thực hiện", "Chờ tài xế nhận"});
         cboFilter1.setPreferredSize(new Dimension(150, 30));
         
-        cboFilter2 = new JComboBox<>(new String[]{"Tất cả phương tiện", "Xe máy", "Ô tô 4 chỗ", "Ô tô 7 chỗ"});
+        cboFilter2 = new JComboBox<>(new String[]{"Tất cả phương tiện", "Xe máy", "Xe ga", "Ô tô 4 chỗ", "Ô tô 7 chỗ"});
         cboFilter2.setPreferredSize(new Dimension(150, 30));
         
         dateRangePanel.add(lblDateRange);
@@ -281,7 +305,6 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         dateRangePanel.add(Box.createHorizontalStrut(20));
         dateRangePanel.add(lblFilter);
         dateRangePanel.add(cboFilter1);
-        dateRangePanel.add(cboFilter2);
         
         panel.add(dateRangePanel);
         
@@ -296,7 +319,7 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         String[] columns = {"ID", "Ngày", "Khách hàng", "Tài xế", "Trạng thái"};
         modelRides = new DefaultTableModel(columns, 0);
         tblRides = new JTable(modelRides);
-        
+        loadTripData(business.getChuyenDiList());
         // Tùy chỉnh giao diện của bảng
         tblRides.setFont(fontNormal);
         tblRides.setRowHeight(25);
@@ -315,93 +338,105 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         return panel;
     }
     
-    private JPanel createRideDetailsPanel() {
+    private void loadTripData(List<DatXe> chuyenDiList) {
+        try {
+            modelRides.setRowCount(0); 
+            if (chuyenDiList == null || chuyenDiList.isEmpty()) 
+                return;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            for (DatXe chuyenDi : chuyenDiList) { // Iterate through the list
+                String formattedDate = dateFormat.format(chuyenDi.getThoiGianDat()); // Assuming getNgayDat() returns a Date
+                modelRides.addRow(new Object[] {chuyenDi.getID_DatXe(), formattedDate, chuyenDi.getID_KH(), chuyenDi.getID_TX(),chuyenDi.getTrangThai()});
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải lịch sử chuyến đi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private JPanel createRideDetailsPanel(DatXe x) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(Color.LIGHT_GRAY), 
-            "Chi Tiết Chuyến Đi", 
-            TitledBorder.DEFAULT_JUSTIFICATION, 
-            TitledBorder.DEFAULT_POSITION, 
-            new Font("Arial", Font.BOLD, 14)
-        ));
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), "Chi Tiết Chuyến Đi", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Arial", Font.BOLD, 14)));
         panel.setPreferredSize(new Dimension(400, 600));
-        
         // Panel thông tin chuyến đi
         JPanel pnlRideInfo = new JPanel();
         pnlRideInfo.setLayout(new BoxLayout(pnlRideInfo, BoxLayout.Y_AXIS));
         pnlRideInfo.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         pnlRideInfo.setBackground(Color.WHITE);
         pnlRideInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
         // Mã chuyến đi
         JPanel pnlRideId = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlRideId.setBackground(Color.WHITE);
         JLabel lblRideIdLabel = new JLabel("Mã chuyến:");
         lblRideIdLabel.setFont(fontBold);
-        JLabel lblRideIdValue = new JLabel("#TRP12345");
+        JLabel lblRideIdValue = new JLabel(x != null ? x.getID_DatXe() : "Không có dữ liệu");
         lblRideIdValue.setFont(fontBold);
         lblRideIdValue.setForeground(new Color(0, 102, 204));
         pnlRideId.add(lblRideIdLabel);
         pnlRideId.add(Box.createHorizontalStrut(5));
         pnlRideId.add(lblRideIdValue);
         pnlRideInfo.add(pnlRideId);
-        
-        
         // Ngày và thời gian
         JPanel pnlDateTime = new JPanel(new BorderLayout());
         pnlDateTime.setBackground(Color.WHITE);
-        
         // Panel ngày bên trái
         JPanel pnlDate = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlDate.setBackground(Color.WHITE);
-        JLabel lblDate = new JLabel("Ngày: 14/06/2023");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+        JLabel lblDate = new JLabel(x != null ? "Ngày: " + dateFormat.format(x.getThoiGianDat()) : "Ngày: Không có dữ liệu");
         lblDate.setFont(fontNormal);
         pnlDate.add(lblDate);
-        
         // Panel thời gian bên phải
         JPanel pnlTime = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         pnlTime.setBackground(Color.WHITE);
-        JLabel lblTime = new JLabel("Thời gian: 14:35");
+        JLabel lblTime = new JLabel(x != null ? "Thời gian: " + timeFormat.format(x.getThoiGianDat()) : "Thời gian: Không có dữ liệu");
         lblTime.setFont(fontNormal);
         pnlTime.add(lblTime);
         
         pnlDateTime.add(pnlDate, BorderLayout.WEST);
         pnlDateTime.add(pnlTime, BorderLayout.EAST);
         pnlRideInfo.add(pnlDateTime);
-        
-        
         // Điểm đón
         JPanel pnlPickup = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlPickup.setBackground(Color.WHITE);
-        JLabel lblPickup = new JLabel("Điểm đón: 123 Nguyễn Huệ, Quận Thanh Khê");
+        JLabel lblPickup = new JLabel(x != null && x.getDiemDon() != null ? "Điểm đón: " + x.getDiemDon() : "Điểm đón: Không có dữ liệu");
         lblPickup.setFont(fontNormal);
         pnlPickup.add(lblPickup);
         pnlRideInfo.add(pnlPickup);
-        
-        
         // Điểm đến
         JPanel pnlDropoff = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlDropoff.setBackground(Color.WHITE);
-        JLabel lblDropoff = new JLabel("Điểm đến: 456 Lê Lợi, Quận Thanh Khê");
+        JLabel lblDropoff = new JLabel(x != null && x.getDiemTra() != null ? "Điểm đến: " + x.getDiemTra(): "Điểm đến: Không có dữ liệu");
         lblDropoff.setFont(fontNormal);
         pnlDropoff.add(lblDropoff);
         pnlRideInfo.add(pnlDropoff);
         
-        
-        // Khoảng cách và thời gian - Đã xóa ô nhỏ
+        // Khoảng cách và thời gian
         JPanel pnlDistTime = new JPanel(new BorderLayout());
         pnlDistTime.setBackground(Color.WHITE);
         
         JPanel pnlDistance = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlDistance.setBackground(Color.WHITE);
-        JLabel lblDistance = new JLabel("Khoảng cách: 3.5 km");
+        JLabel lblDistance = new JLabel(x != null && x.getKhoangCach() != 0 ? "Khoảng cách: " + x.getKhoangCach() + " km" : "Khoảng cách: Không có dữ liệu");
         lblDistance.setFont(fontNormal);
         pnlDistance.add(lblDistance);
         
         JPanel pnlDuration = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         pnlDuration.setBackground(Color.WHITE);
-        JLabel lblDuration = new JLabel("Thời gian: 15 phút");
+        String durationText;
+        if (x != null && x.getThoiGianDat() != null && x.getThoiGianDen() != null) {
+            long diffInMillis = x.getThoiGianDen().getTime() - x.getThoiGianDat().getTime();
+            long diffInMinutes = diffInMillis / (1000 * 60); // Chuyển đổi sang phút
+            if (diffInMinutes >= 60) {
+                long hours = diffInMinutes / 60;
+                long minutes = diffInMinutes % 60;
+                durationText = "Thời gian: " + hours + " giờ " + minutes + " phút";
+            } else 
+                durationText = "Thời gian: " + diffInMinutes + " phút";
+        } else 
+            durationText = "Thời gian: Không có dữ liệu";
+        JLabel lblDuration = new JLabel(durationText);
         lblDuration.setFont(fontNormal);
         pnlDuration.add(lblDuration);
         
@@ -409,23 +444,22 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         pnlDistTime.add(pnlDuration, BorderLayout.EAST);
         pnlRideInfo.add(pnlDistTime);
         
-        
-        // Giá tiền và Trạng thái - Thêm dấu tick trước "Hoàn thành"
+        // Giá tiền và Trạng thái
         JPanel pnlPriceStatus = new JPanel(new BorderLayout());
         pnlPriceStatus.setBackground(Color.WHITE);
         
         JPanel pnlPrice = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 8));
         pnlPrice.setBackground(Color.WHITE);
-        JLabel lblPrice = new JLabel("Giá tiền: 85,000 VND");
+        JLabel lblPrice = new JLabel(x != null ? "Giá tiền: " + String.format("%,.0f VND", x.getGiaTien()) : "Giá tiền: Không có dữ liệu");
         lblPrice.setFont(fontBold);
         lblPrice.setForeground(new Color(25, 25, 112));
         pnlPrice.add(lblPrice);
         
         JPanel pnlStatus = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         pnlStatus.setBackground(Color.WHITE);
-        JLabel lblStatus = new JLabel("Hoàn thành");
+        JLabel lblStatus = new JLabel(x != null ? x.getTrangThai() : "Không có dữ liệu");
         lblStatus.setFont(fontBold);
-        lblStatus.setForeground(new Color(40, 167, 69));
+        lblStatus.setForeground(x != null && x.getTrangThai().equals("Hoàn thành") ? new Color(40, 167, 69) : Color.RED);
         pnlStatus.add(lblStatus);
         
         pnlPriceStatus.add(pnlPrice, BorderLayout.WEST);
@@ -435,26 +469,25 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         panel.add(pnlRideInfo);
         panel.add(Box.createVerticalStrut(15));
         
-        
         // Panel kết hợp cuộn cho thông tin bổ sung
         JPanel combinedInfoPanel = new JPanel();
         combinedInfoPanel.setLayout(new BoxLayout(combinedInfoPanel, BoxLayout.Y_AXIS));
         combinedInfoPanel.setBackground(Color.WHITE);
         
         // Thêm panel thông tin khách hàng
-        JPanel customerPanel = createInfoPanel("Thông tin khách", "Nguyễn Văn A", "SĐT: 0912345678", 4);
+        JPanel customerPanel = createInfoPanel("Thông tin khách", x != null ? x.getID_KH() : "Không có dữ liệu", "SĐT: Chưa có thông tin", 4); // Cần lấy thông tin từ ID_KH
         customerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         combinedInfoPanel.add(customerPanel);
         combinedInfoPanel.add(Box.createVerticalStrut(15));
         
         // Thêm panel thông tin tài xế
-        JPanel driverPanel = createInfoPanel("Thông tin tài xế", "Nguyễn Văn B", "Honda Civic (51A-12345)", 5);
+        JPanel driverPanel = createInfoPanel("Thông tin tài xế",  x != null ? x.getID_TX() : "Không có dữ liệu", "Phương tiện: Chưa có thông tin", 5); // Cần lấy thông tin từ ID_TaiXe
         driverPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         combinedInfoPanel.add(driverPanel);
         combinedInfoPanel.add(Box.createVerticalStrut(15));
         
         // Thêm panel ghi chú
-        JPanel notesPanel = createNotesPanel();
+        JPanel notesPanel = createNotesPanel("Không có ghi chú");
         notesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         combinedInfoPanel.add(notesPanel);
         
@@ -465,6 +498,30 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         combinedScrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
         combinedScrollPane.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
         panel.add(combinedScrollPane);
+        
+        return panel;
+    }
+    
+    // Sửa createNotesPanel để nhận tham số ghi chú
+    private JPanel createNotesPanel(String ghiChu) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220), 1, true), 
+                "Ghi chú",
+                TitledBorder.DEFAULT_JUSTIFICATION,
+                TitledBorder.DEFAULT_POSITION,
+                fontBold
+        ));
+        panel.setBackground(Color.WHITE);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JLabel lblNotes = new JLabel(ghiChu);
+        lblNotes.setFont(fontNormal);
+        lblNotes.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        lblNotes.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        panel.add(lblNotes);
         
         return panel;
     }
@@ -623,8 +680,7 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         
         btnViewDetails = createHoverButton("Xem Chi Tiết", new Color(0, 123, 255), Color.WHITE);
-        btnDeleteRide = createHoverButton("Xóa Chuyến", new Color(220, 53, 69), Color.WHITE);
-        btnBatchDelete = createHoverButton("Xóa Hàng Loạt", new Color(220, 53, 69), Color.WHITE);
+        btnDeleteRide = createHoverButton("Cập nhật chuyến", new Color(220, 53, 69), Color.WHITE);
         btnExportExcel = createHoverButton("Xuất Excel", new Color(40, 167, 69), Color.WHITE);
         btnPrintReport = createHoverButton("In Báo Cáo", new Color(108, 117, 125), Color.WHITE);
         
@@ -633,7 +689,6 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         
         panel.add(btnViewDetails);
         panel.add(btnDeleteRide);
-        panel.add(btnBatchDelete);
         panel.add(btnExportExcel);
         panel.add(btnPrintReport);
         panel.add(btnExit);
@@ -696,30 +751,113 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
         Object source = e.getSource();
         
         if (source == btnSearch) {
-            System.out.println("Tìm kiếm: " + txtSearch.getText());
-            
+            String searchText = txtSearch.getText().trim().toLowerCase();
+            if (searchText.equals("tìm kiếm theo id, tên khách hàng, địa điểm...")) 
+                loadTripData(business.getChuyenDiList());
+            else
+                loadTripData(business.TimKiemChuyen(searchText));
         } else if (source == btnClear) {
             txtSearch.setText("Tìm kiếm theo ID, tên khách hàng, địa điểm...");
             txtSearch.setForeground(Color.GRAY);
-            
         } else if (source == btnFilter) {
-            System.out.println("Áp dụng bộ lọc");
-            
+            String trangThai = (String) cboFilter1.getSelectedItem();
+            Date tuNgay = dateFrom.getDate();
+            Date denNgay = dateTo.getDate();
+            if (tuNgay.after(denNgay)) {
+                JOptionPane.showMessageDialog(this, "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            try {
+                System.out.println(business.LocChuyenDi(trangThai,new Timestamp(tuNgay.getTime()), new Timestamp(denNgay.getTime())));
+                loadTripData(business.LocChuyenDi(trangThai,new Timestamp(tuNgay.getTime()), new Timestamp(denNgay.getTime())));
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         } else if (source == btnReset) {
             System.out.println("Đặt lại bộ lọc");
             
         } else if (source == btnViewDetails) {
             System.out.println("Xem chi tiết chuyến đi");
-            
+            int selectedRow = tblRides.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một chuyến đi để xem chi tiết!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Lấy ID chuyến đi từ dòng được chọn
+            String tripId = (String) modelRides.getValueAt(selectedRow, 0); // Cột "ID"
+            DatXe selectedTrip = business.getChuyenDi(tripId);
+            if (selectedTrip == null) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy thông tin chuyến đi!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Cập nhật panel chi tiết với chuyến đi được chọn
+            JPanel newRideDetailsPanel = createRideDetailsPanel(selectedTrip);
+            updateRideDetailsPanel(newRideDetailsPanel);
         } else if (source == btnDeleteRide) {
-            System.out.println("Xóa chuyến đi");
-            
-        } else if (source == btnBatchDelete) {
-            System.out.println("Xóa hàng loạt");
-            
+    
         } else if (source == btnExportExcel) {
-            System.out.println("Xuất Excel");
-            
+        try {
+                // Create a new workbook and sheet
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("Trip Data");
+
+                // Create header row
+                XSSFRow headerRow = sheet.createRow(0);
+                String[] headers = {"ID Đặt Xe", "Ngày Đặt", "ID Khách Hàng", "ID Tài Xế", "Trạng Thái"};
+                for (int i = 0; i < headers.length; i++) {
+                    XSSFCell cell = headerRow.createCell(i);
+                    cell.setCellValue(headers[i]);
+                }
+
+                // Populate data from modelRides
+                for (int i = 0; i < modelRides.getRowCount(); i++) {
+                    XSSFRow row = sheet.createRow(i + 1); // Start from row 1 (after header)
+                    for (int j = 0; j < modelRides.getColumnCount(); j++) {
+                        XSSFCell cell = row.createCell(j);
+                        Object value = modelRides.getValueAt(i, j);
+                        if (value != null) {
+                            cell.setCellValue(value.toString()); // Convert to string for simplicity
+                        } else {
+                            cell.setCellValue(""); // Handle null values
+                        }
+                    }
+                }
+
+                // Auto-size columns for better readability
+                for (int i = 0; i < headers.length; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+
+                // Open a file chooser to let the user select the save location
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Lưu tệp Excel");
+                fileChooser.setSelectedFile(new File("TripData.xlsx")); // Default file name
+                fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files", "xlsx"));
+
+                int userSelection = fileChooser.showSaveDialog(this);
+                if (userSelection == JFileChooser.APPROVE_OPTION) {
+                    File fileToSave = fileChooser.getSelectedFile();
+                    String filePath = fileToSave.getAbsolutePath();
+                    // Ensure the file has .xlsx extension
+                    if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                        filePath += ".xlsx";
+                    }
+
+                    // Save the workbook to the selected file
+                    try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                        workbook.write(fileOut);
+                        JOptionPane.showMessageDialog(this, "Xuất tệp Excel thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+
+                // Close the workbook to free resources
+                workbook.close();
+
+            } catch (Exception e1) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xuất Excel: " + e1.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+            }  
         } else if (source == btnPrintReport) {
             System.out.println("In báo cáo");
             
@@ -728,7 +866,17 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
             dispose(); // Đóng cửa sổ
         }
     }
-    
+    private void updateRideDetailsPanel(JPanel newRideDetailsPanel) {
+        // Tìm panel cha chứa pnlRideDetails (splitPanel)
+        Container parent = pnlRideDetails.getParent();
+        if (parent != null) {
+            parent.remove(pnlRideDetails);
+            pnlRideDetails = newRideDetailsPanel;
+            parent.add(pnlRideDetails, BorderLayout.EAST);
+            parent.revalidate();
+            parent.repaint();
+        }
+    }
     // Lớp UI thanh cuộn tùy chỉnh để cải thiện trải nghiệm cuộn
     class CustomScrollBarUI extends BasicScrollBarUI {
         private final Color trackColor = new Color(240, 240, 240);
@@ -763,18 +911,15 @@ public class QuanLyChuyenDiView extends FrameMain implements ActionListener {
             if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
                 return;
             }
-            
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
             g2.setColor(isThumbRollover() ? thumbHoverColor : thumbColor);
             g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 10, 10);
-            
             g2.dispose();
         }
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new QuanLyChuyenDiView();
     }
 }
