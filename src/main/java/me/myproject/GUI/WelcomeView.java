@@ -416,7 +416,6 @@ public class WelcomeView extends FrameMain implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
-        
         if ("login".equals(action)) {
             new DangNhapView();
             dispose();
