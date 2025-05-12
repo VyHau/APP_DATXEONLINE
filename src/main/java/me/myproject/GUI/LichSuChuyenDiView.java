@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,7 @@ import me.myproject.MODEL.TaiKhoan;
 import me.myproject.Utilities.DIMENSION.FrameMain;
 
 public class LichSuChuyenDiView extends FrameMain implements ActionListener {
-    private final ChuyenDiBSL business;
+    private final ChuyenDiBSL chuyenDiBSL;
     private JComboBox<String> cboLoaiXe;
     private JDateChooser dateFrom, dateTo;
     private JButton btnLoc, btnXuatFile, btnQuayLai;
@@ -48,9 +49,10 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
 
     public LichSuChuyenDiView(TaiKhoan taiKhoan) throws Exception {
         super("Lịch sử di chuyển");
-        business = new ChuyenDiBSL();
+        chuyenDiBSL = new ChuyenDiBSL();
         tk = taiKhoan;
         init();
+        loadTripData(chuyenDiBSL.getChuyenDiTheoKH(tk.getID_Ref()));
     }
 
     private void init() throws Exception {
@@ -61,7 +63,7 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         JPanel filterPanel = createFilterPanel();
         this.add(filterPanel, BorderLayout.CENTER);
 
-        // loadTripData(business.getChuyenDi(tk.getID_Ref()));
+        //loadTripData(chuyenDiBSL.getLichSuChuyenDi(tk.getID_Ref()));
         this.setVisible(true);
     }
 
@@ -76,9 +78,9 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         btnQuayLai.setFocusPainted(false);
         btnQuayLai.setPreferredSize(new Dimension(30, 30));
         btnQuayLai.setBackground(new Color(0, 178, 192));
-        btnQuayLai.setOpaque(true); // Thêm để hiển thị màu nền
-        btnQuayLai.setBorderPainted(false); // Tắt viền mặc định
-        btnQuayLai.setFocusPainted(false); // Tắt viền focus
+        btnQuayLai.setOpaque(true);
+        btnQuayLai.setBorderPainted(false);
+        btnQuayLai.setFocusPainted(false);
         btnQuayLai.addActionListener(this);
         panel.add(btnQuayLai);
 
@@ -102,13 +104,17 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
 
         // Dropdown loại xe
         JPanel pnlLoaiXe = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        pnlLoaiXe.add(new JLabel("Loại xe:"));
+        pnlLoaiXe.add(new JLabel("Trạng thái:"));
         cboLoaiXe = new JComboBox<>();
         cboLoaiXe.setPreferredSize(new Dimension(150, 25));
         cboLoaiXe.setBackground(Color.WHITE);
+        // Thêm các tùy chọn loại xe (giả định)
+        cboLoaiXe.addItem("Hoàn thành");
+        cboLoaiXe.addItem("Đã huỷ");
+        cboLoaiXe.addItem("Chờ tài xế nhận");
+        cboLoaiXe.addItem("Đang thực hiện");
         pnlLoaiXe.add(cboLoaiXe);
         searchPanel.add(pnlLoaiXe);
-        // Đổ dữ liệu loại xe vào combobox
 
         // Chọn khoảng thời gian
         JPanel pnlDate = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -130,9 +136,9 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         btnLoc = new JButton("Lọc");
         btnLoc.setBackground(new Color(0, 178, 192));
         btnLoc.setForeground(Color.WHITE);
-        btnLoc.setOpaque(true); // Thêm để hiển thị màu nền
-        btnLoc.setBorderPainted(false); // Tắt viền mặc định
-        btnLoc.setFocusPainted(false); // Tắt viền focus
+        btnLoc.setOpaque(true);
+        btnLoc.setBorderPainted(false);
+        btnLoc.setFocusPainted(false);
         btnLoc.addActionListener(this);
         pnlButtons.add(btnLoc);
 
@@ -174,6 +180,15 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         header.setBackground(new Color(240, 240, 240));
         header.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
+        // Thêm sự kiện click vào bảng
+        tblLichSu.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = tblLichSu.getSelectedRow();
+            if (selectedRow >= 0) {
+                String maChuyen = (String) modelTable.getValueAt(selectedRow, 0);
+                showTripDetail(maChuyen);
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(tblLichSu);
         scrollPane.setPreferredSize(new Dimension(600, 400));
         contentPanel.add(scrollPane, BorderLayout.CENTER);
@@ -189,8 +204,7 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
 
     private JPanel createDetailPanel() {
         JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "CHI TIẾT CHUYẾN ĐI"));
+        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY), "CHI TIẾT CHUYẾN ĐI"));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(250, 400));
 
@@ -199,17 +213,14 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         pnlNgay.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         pnlNgay.add(new JLabel("Ngày:"), BorderLayout.NORTH);
         lblNgayChiTiet = new JLabel();
-        // Khi chọn hàng trên bảng hiện ngày
         pnlNgay.add(lblNgayChiTiet, BorderLayout.CENTER);
         panel.add(pnlNgay);
 
-        // Loại xe
+        //trạng thái
         JPanel pnlLoaiXe = new JPanel(new BorderLayout());
         pnlLoaiXe.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
-        pnlLoaiXe.add(new JLabel("Loại xe:"), BorderLayout.NORTH);
+        pnlLoaiXe.add(new JLabel("Trạng thái:"), BorderLayout.NORTH);
         lblLoaiXeChiTiet = new JLabel();
-
-        // Chọn hàng hiện loại xe
         pnlLoaiXe.add(lblLoaiXeChiTiet, BorderLayout.CENTER);
         panel.add(pnlLoaiXe);
 
@@ -218,8 +229,6 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         pnlDiemDon.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         pnlDiemDon.add(new JLabel("Điểm đón:"), BorderLayout.NORTH);
         lblDiemDonChiTiet = new JLabel();
-
-        // Hiển thị điểm đón theo hàng được chọn
         pnlDiemDon.add(lblDiemDonChiTiet, BorderLayout.CENTER);
         panel.add(pnlDiemDon);
 
@@ -228,25 +237,22 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         pnlDiemDen.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         pnlDiemDen.add(new JLabel("Điểm đến:"), BorderLayout.NORTH);
         lblDiemDenChiTiet = new JLabel();
-        // Hiển thị điểm đến theo hàng được chọn
         pnlDiemDen.add(lblDiemDenChiTiet, BorderLayout.CENTER);
         panel.add(pnlDiemDen);
 
-        // Tài xế
+        // Số km
         JPanel pnlSoKm = new JPanel(new BorderLayout());
         pnlSoKm.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         pnlSoKm.add(new JLabel("Số km:"), BorderLayout.NORTH);
         lblSoKmChiTiet = new JLabel();
-        // Hiển thị tên tài xế theo hàng được chọn
         pnlSoKm.add(lblSoKmChiTiet, BorderLayout.CENTER);
         panel.add(pnlSoKm);
 
-        // Giá tiền
+        // Khuyến mãi
         JPanel pnlKhuyenMai = new JPanel(new BorderLayout());
         pnlKhuyenMai.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         pnlKhuyenMai.add(new JLabel("Khuyến mãi:"), BorderLayout.NORTH);
         lblKhuyenMaiChiTiet = new JLabel();
-        // Hiển thị giá tiền theo hàng được chọn
         pnlKhuyenMai.add(lblKhuyenMaiChiTiet, BorderLayout.CENTER);
         panel.add(pnlKhuyenMai);
 
@@ -267,6 +273,7 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         }
         pnlDanhGiaContainer.add(pnlDanhGia, BorderLayout.CENTER);
         panel.add(pnlDanhGiaContainer);
+
         return panel;
     }
 
@@ -275,11 +282,12 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
             modelTable.setRowCount(0);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             for (DatXe chuyenDi : chuyenDiList) {
-                // Giả định giá tiền = số km * 10,000 VND
-                double giaTien = chuyenDi.getKhoangCach() * 10000;
-                modelTable.addRow(new Object[] { chuyenDi.getID_DatXe(), chuyenDi.getID_TX(),
-                        dateFormat.format(chuyenDi.getThoiGianDat()), String.format("%,.0f VND", giaTien),
-                        chuyenDi.getTrangThai() });
+                String maChuyen = (String) chuyenDi.getID_DatXe();
+                String tenTaiXe = (String) chuyenDi.getID_TX();
+                java.sql.Timestamp ngayDat = (java.sql.Timestamp) chuyenDi.getThoiGianDat();
+                Double giaTien = (Double) chuyenDi.getGiaTien();
+                String trangThai = (String) chuyenDi.getTrangThai();
+                modelTable.addRow(new Object[] { maChuyen, tenTaiXe, dateFormat.format(ngayDat), String.format("%,.0f VND", giaTien), trangThai });
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải lịch sử chuyến đi: " + e.getMessage(), "Lỗi",
@@ -287,24 +295,66 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
         }
     }
 
+     private void showTripDetail(String maChuyen) {
+    	 List<DatXe> chuyenDiList = null;
+    	 try {
+    	     chuyenDiList = chuyenDiBSL.getChuyenDi();
+    	 } catch (Exception e) {
+    	     e.printStackTrace();
+    	     JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi lấy dữ liệu chuyến đi.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    	 }
+
+    	 DatXe detail = new DatXe();
+    	 for (DatXe item : chuyenDiList)
+    		 if(item.getID_DatXe().equals(maChuyen)){
+    			 detail = item;
+    			 break;
+    		 }
+         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+         lblNgayChiTiet.setText(detail.getThoiGianDat() != null ? sdf.format((Date) detail.getThoiGianDat()) : "");
+         lblLoaiXeChiTiet.setText(detail.getTrangThai() != null ? detail.getTrangThai().toString() : "");
+         lblDiemDonChiTiet.setText(detail.getDiemDon() != null ? detail.getDiemDon().toString() : "");
+         lblDiemDenChiTiet.setText(detail.getDiemTra() != null ? detail.getDiemTra().toString() : "");
+         Double khoangCach = detail.getKhoangCach();
+         lblSoKmChiTiet.setText(khoangCach != null ? khoangCach.toString() : "");
+         lblKhuyenMaiChiTiet.setText(detail.getID_KhuyenMai() != null ? detail.getID_KhuyenMai().toString() : "Không có");
+         int diemSo = detail.getDiemSo();  // Đây là điểm số (số sao)
+         setRating(diemSo);  // Gọi hàm setRating để thay đổi số sao
+     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == btnLoc) {
-            String loaiXe = (String) cboLoaiXe.getSelectedItem();
+            String trangThai = (String) cboLoaiXe.getSelectedItem();
             Date tuNgay = dateFrom.getDate();
             Date denNgay = dateTo.getDate();
             try {
-                // loadTripData(business.LocChuyenDi(loaiXe, tuNgay, denNgay, tk.getID_Ref()));
+                // Validate inputs
+                if (trangThai == null || trangThai.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng chọn trạng thái.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if (tuNgay == null || denNgay == null) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                if (tuNgay.after(denNgay)) {
+                    JOptionPane.showMessageDialog(this, "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.", "Lỗi", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            
+                // Call loadTripData with validated inputs
+                loadTripData(chuyenDiBSL.locChuyenDi(trangThai, new Timestamp(tuNgay.getTime()), new Timestamp(denNgay.getTime())));
             } catch (Exception e1) {
-                e1.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi lọc: " + e1.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         } else if (source == btnXuatFile) {
-            System.out.println("Đang xuất dữ liệu...");
-            // business.exportToFile();
+            System.out.println("Xuất dữ liệu ra file... (Chưa triển khai logic thực tế)");
+            // Thêm logic xuất file tại đây (ví dụ: dùng thư viện như Apache POI)
         } else if (source == btnQuayLai) {
             new TrangChuUserView(tk);
-            this.dispose(); // Đóng cửa sổ hiện tại
+            this.dispose();
         } else {
             // Kiểm tra nếu nguồn là một trong các nút đánh giá
             for (int i = 0; i < btnDanhGia.length; i++) {
@@ -318,8 +368,16 @@ public class LichSuChuyenDiView extends FrameMain implements ActionListener {
 
     private void setRating(int rating) {
         System.out.println("Số sao đánh giá: " + rating);
-        for (int i = 0; i < btnDanhGia.length; i++)
-            btnDanhGia[i].setBackground(i < rating ? Color.YELLOW : Color.WHITE);
+        for (int i = 0; i < btnDanhGia.length; i++) {
+            if (i < rating) {
+                // Đổi màu sao được chọn
+                btnDanhGia[i].setBackground(Color.YELLOW);  // Màu vàng cho sao được chọn
+                btnDanhGia[i].setOpaque(true);  // Đảm bảo sao có màu nền
+            } else {
+                // Đổi màu sao chưa được chọn
+                btnDanhGia[i].setBackground(Color.WHITE);  // Màu trắng cho sao chưa chọn
+                btnDanhGia[i].setOpaque(true);  // Đảm bảo sao có màu nền
+            }
+        }
     }
-
 }
