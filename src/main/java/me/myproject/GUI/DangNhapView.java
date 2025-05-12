@@ -48,6 +48,8 @@ public class DangNhapView extends FrameMain implements ActionListener {
     public JButton btnLogin, btnForgetPass;
     private JCheckBox rememberPasswordCheckBox;
 
+    private JLabel phoneErrorLabel, passErrorLabel;
+
     public DangNhapView() {
         super("Đăng nhập");
         bussiness = new DangNhapBSL();
@@ -56,21 +58,21 @@ public class DangNhapView extends FrameMain implements ActionListener {
 
     private void init() {
         this.setLayout(new BorderLayout());
-        
+
         Dimension frameDimension = this.getSize();
         int frameWidth = frameDimension.width;
         int frameHeight = frameDimension.height;
 
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(frameWidth, frameHeight));
-        
+
         JLabel backgroundLabel = new JLabel();
         ImageIcon backgroundIcon = new ImageIcon(getClass().getResource("/me/myproject/IMAGE/bgrmenu.png"));
         Image backgroundImage = backgroundIcon.getImage().getScaledInstance(frameWidth, frameHeight, Image.SCALE_SMOOTH);
         backgroundLabel.setIcon(new ImageIcon(backgroundImage));
         backgroundLabel.setBounds(0, 0, frameWidth, frameHeight);
         layeredPane.add(backgroundLabel, JLayeredPane.DEFAULT_LAYER);
-    
+
         JPanel panel = new JPanel(new GridBagLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -82,29 +84,29 @@ public class DangNhapView extends FrameMain implements ActionListener {
                 g2d.dispose();
             }
         };
-        
+
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         int panelWidth = (int)(frameWidth * 0.5);
         int panelHeight = (int)(frameHeight * 0.7);
         panel.setBounds((frameWidth - panelWidth) / 2, (frameHeight - panelHeight) / 2, panelWidth, panelHeight);
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
-        
+
         JLabel titleLabel = new JLabel("ĐĂNG NHẬP");
         titleLabel.setFont(FontMain.TITLE_FONT);
         titleLabel.setForeground(ColorMain.colorPrimary);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titlePanel.add(titleLabel, BorderLayout.CENTER);
-        
+
         JPanel underline = new JPanel();
         underline.setBackground(ColorMain.colorPrimary);
         underline.setPreferredSize(new Dimension(150, 3));
@@ -112,9 +114,9 @@ public class DangNhapView extends FrameMain implements ActionListener {
         underlineWrapper.setOpaque(false);
         underlineWrapper.add(underline, BorderLayout.CENTER);
         titlePanel.add(underlineWrapper, BorderLayout.SOUTH);
-        
+
         panel.add(titlePanel, gbc);
-        
+
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -126,9 +128,13 @@ public class DangNhapView extends FrameMain implements ActionListener {
         gbc.gridx = 1;
         tfdPhone = createStyledTextField();
         panel.add(tfdPhone, gbc);
-        
-        gbc.gridx = 0;
+
+        phoneErrorLabel = createErrorLabel("");
         gbc.gridy = 2;
+        panel.add(phoneErrorLabel, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         JLabel passLabel = new JLabel("Mật khẩu");
         passLabel.setFont(FontMain.LABEL_FONT);
         passLabel.setForeground(ColorMain.colorPrimary);
@@ -137,9 +143,13 @@ public class DangNhapView extends FrameMain implements ActionListener {
         gbc.gridx = 1;
         tfdPass = createStyledPasswordField();
         panel.add(tfdPass, gbc);
-        
+
+        passErrorLabel = createErrorLabel("");
+        gbc.gridy = 4;
+        panel.add(passErrorLabel, gbc);
+
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 5;
         JLabel roleLabel = new JLabel("Vai trò");
         roleLabel.setFont(FontMain.LABEL_FONT);
         roleLabel.setForeground(ColorMain.colorPrimary);
@@ -153,32 +163,18 @@ public class DangNhapView extends FrameMain implements ActionListener {
         cbRole.setSelectedIndex(0);
         cbRole.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(1, 2, 0, 2)));
         panel.add(cbRole, gbc);
-        
+
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         gbc.gridwidth = 1;
         rememberPasswordCheckBox = new JCheckBox("Nhớ mật khẩu");
         rememberPasswordCheckBox.setFont(new Font("Arial", Font.PLAIN, 13));
         rememberPasswordCheckBox.setForeground(new Color(70, 70, 70));
         rememberPasswordCheckBox.setOpaque(false);
         panel.add(rememberPasswordCheckBox, gbc);
-        
+
         gbc.gridx = 1;
-        btnForgetPass = new JButton("Quên mật khẩu?") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2d.setColor(ColorMain.colorSecondary);
-                
-                if (getModel().isRollover()) {
-                    int y = getHeight() - 3;
-                    g2d.drawLine(0, y, getWidth(), y);
-                }
-                g2d.dispose();
-            }
-        };
+        btnForgetPass = new JButton("Quên mật khẩu?");
         btnForgetPass.setFont(new Font("Arial", Font.BOLD, 13));
         btnForgetPass.setBorderPainted(false);
         btnForgetPass.setContentAreaFilled(false);
@@ -187,22 +183,22 @@ public class DangNhapView extends FrameMain implements ActionListener {
         btnForgetPass.setFocusPainted(false);
         btnForgetPass.addActionListener(this);
         panel.add(btnForgetPass, gbc);
-        
+
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 7;
         gbc.gridwidth = 2;
         btnLogin = createStyledButton("Đăng nhập");
         btnLogin.addActionListener(this);
         panel.add(btnLogin, gbc);
-        
-        gbc.gridy = 6;
+
+        gbc.gridy = 8;
         JLabel orLabel = new JLabel("HOẶC");
         orLabel.setFont(new Font("Arial", Font.BOLD, 12));
         orLabel.setForeground(new Color(150, 150, 150));
         orLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(orLabel, gbc);
-        
-        gbc.gridy = 7;
+
+        gbc.gridy = 9;
         JLabel signUpLabel = new JLabel("Bạn chưa có tài khoản? Đăng ký ngay");
         signUpLabel.setFont(new Font("Arial", Font.BOLD, 13));
         signUpLabel.setForeground(ColorMain.colorSecondary);
@@ -211,25 +207,25 @@ public class DangNhapView extends FrameMain implements ActionListener {
         signUpLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new DangKyView(); 
-                dispose(); 
+                new DangKyView();
+                dispose();
             }
-            
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 signUpLabel.setText("<html><u>Bạn chưa có tài khoản? Đăng ký ngay</u></html>");
             }
-            
+
             @Override
             public void mouseExited(MouseEvent e) {
                 signUpLabel.setText("Bạn chưa có tài khoản? Đăng ký ngay");
             }
         });
         panel.add(signUpLabel, gbc);
-        
+
         layeredPane.add(panel, JLayeredPane.PALETTE_LAYER);
         this.add(layeredPane, BorderLayout.CENTER);
-        
+
         this.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 Dimension size = getSize();
@@ -240,30 +236,28 @@ public class DangNhapView extends FrameMain implements ActionListener {
                 panel.setBounds((size.width - newPanelWidth) / 2, (size.height - newPanelHeight) / 2, newPanelWidth, newPanelHeight);
             }
         });
-        
+
         this.setVisible(true);
     }
-    
+
     private JTextField createStyledTextField() {
         JTextField textField = new JTextField(15);
         textField.setFont(FontMain.TEXT_FONT);
-        textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)
-        ));
+        textField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
         return textField;
     }
-    
+
     private JPasswordField createStyledPasswordField() {
         JPasswordField passwordField = new JPasswordField(15);
         passwordField.setFont(FontMain.TEXT_FONT);
-        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)
-        ));
+        passwordField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
         return passwordField;
     }
-    
+
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text) {
             private boolean hover = false;
-            
+
             {
                 addMouseListener(new MouseAdapter() {
                     @Override
@@ -271,7 +265,7 @@ public class DangNhapView extends FrameMain implements ActionListener {
                         hover = true;
                         repaint();
                     }
-                    
+
                     @Override
                     public void mouseExited(MouseEvent e) {
                         hover = false;
@@ -279,20 +273,20 @@ public class DangNhapView extends FrameMain implements ActionListener {
                     }
                 });
             }
-            
+
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                
+
                 GradientPaint gradient;
-                if (hover) 
+                if (hover)
                     gradient = new GradientPaint(0, 0, ColorMain.colorSecondary, getWidth(), getHeight(), new Color(0, 119, 204));
-                else 
+                else
                     gradient = new GradientPaint(0, 0, ColorMain.colorPrimary, getWidth(), getHeight(), ColorMain.colorSecondary);
                 g2d.setPaint(gradient);
                 g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-                
+
                 g2d.setFont(new Font("Arial", Font.BOLD, 14));
                 g2d.setColor(Color.WHITE);
                 FontMetrics metrics = g2d.getFontMetrics();
@@ -302,7 +296,7 @@ public class DangNhapView extends FrameMain implements ActionListener {
                 g2d.dispose();
             }
         };
-        
+
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setPreferredSize(new Dimension(200, 40));
@@ -310,8 +304,15 @@ public class DangNhapView extends FrameMain implements ActionListener {
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
+
         return button;
+    }
+
+    private JLabel createErrorLabel(String errorMessage) {
+        JLabel label = new JLabel(errorMessage);
+        label.setFont(new Font("Arial", Font.PLAIN, 12));
+        label.setForeground(Color.RED);
+        return label;
     }
 
     @Override
@@ -323,22 +324,44 @@ public class DangNhapView extends FrameMain implements ActionListener {
             String pass = String.valueOf(tfdPass.getPassword()).trim();
             String role = (String) cbRole.getSelectedItem();
 
+            // Kiểm tra dữ liệu nhập vào
+            if (phone.isEmpty() || pass.isEmpty()) {
+                if (phone.isEmpty()) phoneErrorLabel.setText("Số điện thoại không được để trống");
+                else phoneErrorLabel.setText("");
+                if (pass.isEmpty()) passErrorLabel.setText("Mật khẩu không được để trống");
+                else passErrorLabel.setText("");
+                return;
+            }
+
+            // Kiểm tra định dạng số điện thoại (ví dụ: kiểm tra chỉ chứa số và đủ 10 chữ số)
+            if (!phone.matches("\\d{10}")) {
+                phoneErrorLabel.setText("Số điện thoại không hợp lệ.");
+                return;
+            } else {
+                phoneErrorLabel.setText(""); 
+            }
+
+            // Kiểm tra mật khẩu có đủ độ dài (ví dụ: ít nhất 6 ký tự)
+            if (pass.length() < 3) {
+                passErrorLabel.setText("Mật khẩu phải ít nhất 6 ký tự.");
+                return;
+            } else 
+                passErrorLabel.setText(""); 
+
             Map<String, Object> result = bussiness.xuLyDangNhap(phone, pass, role);
             String message = (String) result.get("message");
             TaiKhoan taiKhoan = (TaiKhoan) result.get("taiKhoan");
-
             ImageIcon icon = new ImageIcon("src/resources/image2.png");
             JLabel label = new JLabel(message, icon, JLabel.CENTER);
             label.setFont(new Font("Arial", Font.PLAIN, 14));
             JOptionPane.showMessageDialog(this, label, "Thông báo", taiKhoan != null ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-
             if (taiKhoan != null) {
-                switch (taiKhoan.getID_VaiTro().toUpperCase()) {
+                switch (taiKhoan.getID_VaiTro().trim()) {
                     case "USER":
                         new TrangChuUserView(taiKhoan);
                         break;
                     case "DRIVER":
-                        // new TrangChuDriverView(taiKhoan);
+                        new TrangChuDriverView(taiKhoan);
                         break;
                     case "ADMIN":
                         // new TrangChuAdminView(taiKhoan);
@@ -358,7 +381,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
             }
             String message = bussiness.xuLyQuenMatKhau(phone);
             JOptionPane.showMessageDialog(this, message, "Thông báo", message.contains("Mã OTP đã được gửi") ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
-
             if (!message.contains("Mã OTP đã được gửi")) return;
 
             JTextField otpField = new JTextField(10);
@@ -370,7 +392,6 @@ public class DangNhapView extends FrameMain implements ActionListener {
             otpPanel.add(otpField, BorderLayout.CENTER);
 
             int otpResult = JOptionPane.showConfirmDialog(this, otpPanel, "Xác nhận OTP", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
             if (otpResult != JOptionPane.OK_OPTION) return;
 
             String otpInput = otpField.getText().trim();
@@ -384,8 +405,8 @@ public class DangNhapView extends FrameMain implements ActionListener {
             JPasswordField confirmPassField = new JPasswordField();
             newPassField.setFont(FontMain.TEXT_FONT);
             confirmPassField.setFont(FontMain.TEXT_FONT);
-            newPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
-            confirmPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            newPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+            confirmPassField.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)), BorderFactory.createEmptyBorder(8, 10, 8, 10)));
 
             JPanel passPanel = new JPanel(new GridBagLayout());
             GridBagConstraints passGbc = new GridBagConstraints();
@@ -417,5 +438,5 @@ public class DangNhapView extends FrameMain implements ActionListener {
             }
         }
     }
-
+    
 }
