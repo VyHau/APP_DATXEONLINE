@@ -14,8 +14,10 @@ public class TaiXe {
     private String matKhau;
     private String bienSoXe;
     private String tenXe;
+    private Boolean trangThaiTK;
     
-    public TaiXe(String ID_TaiXe, String ID_LoaiXe, String tenTaiXe, Date ngaySinh, String CCCD, String GPLX, String SDT, String email, String matKhau, String bienSoXe, String tenXe) {
+    public TaiXe(){};
+    public TaiXe(String ID_TaiXe, String ID_LoaiXe, String tenTaiXe, Date ngaySinh, String CCCD, String GPLX, String SDT, String email, String matKhau, String bienSoXe, String tenXe, Boolean trangThaiTK) {
         this.ID_TaiXe = ID_TaiXe;
         this.ID_LoaiXe = ID_LoaiXe;
         this.tenTaiXe = tenTaiXe;
@@ -27,6 +29,7 @@ public class TaiXe {
         this.matKhau = matKhau;
         this.bienSoXe = bienSoXe;
         this.tenXe = tenXe;
+        this.trangThaiTK = trangThaiTK;
     }
 
     public String getID_TaiXe() {
@@ -115,6 +118,12 @@ public class TaiXe {
 
     public void setTenXe(String tenXe) {
         this.tenXe = tenXe;
+    }
+    public Boolean getTrangThaiTK() {
+        return trangThaiTK;
+    }
+    public void setTrangThaiTK(Boolean trangThaiTK) {
+        this.trangThaiTK = trangThaiTK;
     }
     
 }
