@@ -1,23 +1,52 @@
 package me.myproject.GUI;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;  
+import java.time.format.DateTimeFormatter;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.border.EmptyBorder;
+
+import me.myproject.MODEL.TaiKhoan;
 import me.myproject.Utilities.ColorMain;
 import me.myproject.Utilities.DIMENSION.FrameMain;
 
 public class TrangChuDriverView extends FrameMain implements ActionListener {
+    private TaiKhoan tk;
     private JPanel mainPanel, headerPanel, menuPanel, contentPanel;
     private JLabel logoLabel, timeLabel, driverNameLabel, phuongTienLbl, bienSoXeLbl, thuNhapNowLbl, chaoTaiXeLbl;
     private JButton btnBatDauChuyen, btnNhanChuyen, btnKetThucChuyen, btnTrangThai, btnDanhGia, btnTKNganHang, btnLichSuChuyen, btnTroChuyen, btnDangXuat;
     private Timer timeTimer;
     private DateTimeFormatter timeFormatter;
     
-    public TrangChuDriverView() 
+    public TrangChuDriverView(TaiKhoan taiKhoan) 
     {
         super("Trang Chủ - Tài xế");
+        tk=taiKhoan;
         init();
     }
     
@@ -554,6 +583,7 @@ public class TrangChuDriverView extends FrameMain implements ActionListener {
             btnKetThucChuyen.setForeground(ColorMain.blueHeader); 
         } else if (source == btnDanhGia) {
             btnDanhGia.setForeground(ColorMain.blueHeader); 
+            new DanhGiaTaiXeView(tk);
         } else if (source == btnTrangThai) {
             btnTrangThai.setForeground(ColorMain.blueHeader);
         }else if (source == btnTKNganHang) {
@@ -580,9 +610,5 @@ public class TrangChuDriverView extends FrameMain implements ActionListener {
         btnLichSuChuyen.setForeground(Color.WHITE);
         btnTroChuyen.setForeground(Color.WHITE);
         btnDangXuat.setForeground(new Color(255, 100, 100)); // Giữ màu đặc biệt cho nút đăng xuất
-    }
-    
-    public static void main(String[] args) {
-        new TrangChuDriverView();
     }
 }
