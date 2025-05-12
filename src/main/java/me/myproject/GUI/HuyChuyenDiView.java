@@ -51,6 +51,7 @@ public class HuyChuyenDiView extends FrameMain {
         initComponents();
         tk = taiKhoan;
         business = new ChuyenDiBSL();
+        loadTripData(business.getChuyenDiTheoKH(tk.getID_Ref()));
         this.setVisible(true);
     }
 
@@ -233,24 +234,25 @@ public class HuyChuyenDiView extends FrameMain {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = currentTripsTable.getSelectedRow();
                 if (selectedRow != -1) {
-                    String maChuyen = (String) model.getValueAt(selectedRow, 0);
+                    String maChuyen = (String) model.getValueAt(selectedRow, 0); 
+                    System.out.println("Mã chuyến được chọn: " + maChuyen.trim()); 
                     try {
-                        // business.HuyChuyenDi(maChuyen);
-                        model.removeRow(selectedRow);
-                        // Hiển thị thông báo thành công
-                        JOptionPane.showMessageDialog(HuyChuyenDiView.this,
-                                "Đã hủy chuyến đi " + maChuyen + " thành công!", "Thông báo",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        business.HuyChuyenDi(maChuyen, reasonLabel.toString()); 
+                        model.removeRow(selectedRow); 
+                        JOptionPane.showMessageDialog(HuyChuyenDiView.this, "Đã hủy chuyến đi " + maChuyen + " thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(HuyChuyenDiView.this, "Lỗi khi hủy chuyến đi: " + ex.getMessage(),
-                                "Thông báo", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(HuyChuyenDiView.this, 
+                            "Lỗi khi hủy chuyến đi: " + ex.getMessage(), 
+                            "Lỗi", 
+                            JOptionPane.ERROR_MESSAGE);
+                        ex.printStackTrace(); 
                     }
                 } else {
-                    JOptionPane.showMessageDialog(HuyChuyenDiView.this, "Vui lòng chọn một chuyến đi để hủy.",
-                            "Thông báo", JOptionPane.WARNING_MESSAGE);
-                }
+                    JOptionPane.showMessageDialog(HuyChuyenDiView.this, "Vui lòng chọn một chuyến đi để hủy.", "Cảnh báo",  JOptionPane.WARNING_MESSAGE);}
             }
         });
+
+
         buttonPanel.add(cancelButton);
         // Thêm các phần vào content panel
         contentPanel.add(centerPanel, BorderLayout.CENTER);
@@ -303,14 +305,14 @@ public class HuyChuyenDiView extends FrameMain {
             model.setRowCount(0);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
             for (DatXe chuyenDi : chuyenDiList)
-                model.addRow(new Object[] { chuyenDi.getID_DatXe(), chuyenDi.getID_TX(), chuyenDi.getDiemDon(),
-                        chuyenDi.getDiemTra(), "Loại xe" });
+            	if(!chuyenDi.getTrangThai().equals("Đã huỷ"))
+            		model.addRow(new Object[] { chuyenDi.getID_DatXe(), chuyenDi.getID_TX(), chuyenDi.getDiemDon(),chuyenDi.getDiemTra(), "Loại xe" });
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải lịch sử chuyến đi: " + e.getMessage(), "Lỗi",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải lịch sử chuyến đi: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void hienThiChiTiet(TaiXe tx) {
     }
+
 }
