@@ -18,28 +18,25 @@ public class DangNhapBSL {
 
     public Map<String, Object> xuLyDangNhap(String phone, String password, String role) {
         Map<String, Object> result = new HashMap<>();
-        if (phone.isEmpty()) {
-            result.put("message", "Vui lòng nhập số điện thoại!");
-            result.put("taiKhoan", null);
-            return result;
-        }
-        if (password.isEmpty()) {
-            result.put("message", "Vui lòng nhập mật khẩu!");
-            result.put("taiKhoan", null);
-            return result;
-        }
         try {
-            Map<String, String> data = Map.of("userName", phone, "passWord", password, "role", role);
+            Map<String, String> data = Map.of("SDT", phone, "matKhau", password, "ID_VaiTro", role);
+            
+            // Gọi API và nhận phản hồi
             Map<String, Object> response = APIHelper.postForMap("http://localhost:8080/ProjectNHOM/api-account", data);
-
+            
+            // Kiểm tra xem status có phải là "success" không
             String status = (String) response.get("status");
-            if ("Success".equals(status)) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> userData = (Map<String, Object>) response.get("data");
-                String idVaiTro = (String) userData.get("ID_VaiTro");
-                String idRef = (String) userData.get("ID_Ref");
-                TaiKhoan taiKhoan = new TaiKhoan(phone, password, idVaiTro, idRef);
-                result.put("message", "Đăng nhập thành công!");
+            
+            if ("success".equals(status)) {
+                // Nếu "status" là success, lấy thông tin "account" từ "data"
+                Map<String, Object> accountData = (Map<String, Object>) response.get("account");
+                TaiKhoan taiKhoan = new TaiKhoan(
+                    (String) accountData.get("userName"),
+                    (String) accountData.get("matKhau"),
+                    (String) accountData.get("id_VaiTro"),
+                    (String) accountData.get("id_NguoiDung")
+                );
+                result.put("message", "Đăng nhập thành công");
                 result.put("taiKhoan", taiKhoan);
             } else {
                 String errorMessage = (String) response.getOrDefault("message", "Đăng nhập thất bại!");
@@ -53,6 +50,8 @@ public class DangNhapBSL {
         }
         return result;
     }
+
+
 
     public boolean kiemTraTonTaiSDT(String phone) {
         //Gọi API trả về DS tài khoản rồi truyền vào listAccount
@@ -103,4 +102,7 @@ public class DangNhapBSL {
             return "Lỗi khi cập nhật mật khẩu!";
         }
     }
+    // public static void main(String[] args) {
+    //     Map<String, Object> result = xuLyDangNhap("0355160346", String password, String role)
+    // }
 }
