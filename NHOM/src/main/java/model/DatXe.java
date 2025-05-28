@@ -10,6 +10,7 @@ public class DatXe {
     private String ID_KhuyenMai;
     private String DiemTra;
     private String DiemDon;
+    private Double GiaTien;
     private Timestamp thoiGianDat;
     private Timestamp thoiGianDon;
     private Timestamp thoiGianDen;
@@ -19,7 +20,7 @@ public class DatXe {
     private String danhGia;
 
     public DatXe(String ID_ChuyenXe, String ID_KhachHang, String ID_TaiXe, String ID_ThanhToan, String ID_KhuyenMai,
-             String DiemTra, String DiemDon, Timestamp thoiGianDat, Timestamp thoiGianDon, Timestamp thoiGianDen,
+             String DiemTra, String DiemDon, Double GiaTien,Timestamp thoiGianDat, Timestamp thoiGianDon, Timestamp thoiGianDen,
             String trangThai, double khoangCach, int diemSo, String danhGia) {
         this.ID_DatXe = ID_ChuyenXe;
         this.ID_KH = ID_KhachHang;
@@ -28,6 +29,7 @@ public class DatXe {
         this.ID_KhuyenMai = ID_KhuyenMai;
         this.DiemTra = DiemTra;
         this.DiemDon = DiemDon;
+        this.GiaTien = GiaTien;
         this.thoiGianDat = thoiGianDat;
         this.thoiGianDon = thoiGianDon;
         this.thoiGianDen = thoiGianDen;
@@ -35,11 +37,9 @@ public class DatXe {
         this.khoangCach = khoangCach;
         this.diemSo = diemSo;
         this.danhGia = danhGia;
-
     }
 
     public DatXe() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getID_DatXe() {
@@ -97,6 +97,14 @@ public class DatXe {
 
     public void setDiemDon(String DiemDon) {
         this.DiemDon = DiemDon;
+    }
+    
+    public Double getGiaTien() {
+        return GiaTien;
+    }
+
+    public void setGiaTien(Double GiaTien) {
+        this.GiaTien = GiaTien;
     }
 
     public Timestamp getThoiGianDat() {

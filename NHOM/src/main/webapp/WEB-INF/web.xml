@@ -5,7 +5,7 @@
                              https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
          version="5.0">
 
-		<filter>
+		<!-- <filter>
 		    <filter-name>CORS</filter-name>
 		    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
 		    <init-param>
@@ -24,13 +24,13 @@
 		        <param-name>cors.support.credentials</param-name>
 		        <param-value>true</param-value>
 		    </init-param>
-		</filter>
-		<filter-mapping>
+		</filter> -->
+		<!-- <filter-mapping>
 		    <filter-name>CORS</filter-name>
-		    <url-pattern>/api/*</url-pattern> <!-- Cấu hình cho URL cần sử dụng CORS -->
+		    <url-pattern>/api/*</url-pattern> Cấu hình cho URL cần sử dụng CORS
 		</filter-mapping>
 		
-		<!-- Filter -->
+		Filter
 	    <filter>
 	        <filter-name>AuthenticationFilter</filter-name>
 	        <filter-class>filter.AuthenticationFilter</filter-class>
@@ -38,7 +38,7 @@
 	    <filter-mapping>
 	        <filter-name>AuthenticationFilter</filter-name>
 	        <url-pattern>/api/admin/*</url-pattern>
-	    </filter-mapping>
+	    </filter-mapping> -->
 
 
 

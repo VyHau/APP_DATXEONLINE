@@ -73,12 +73,14 @@ public class TaiXeController extends HttpServlet{
 		    Part jsonPart = req.getPart("data");
 		    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(jsonPart.getInputStream()));
 		    String jsonString = bufferedReader.lines().collect(Collectors.joining("\n"));
+		    String matKhau=req.getParameter("passWord");
 		    
 		    TaiXe taiXe = JsonUtil.fromJson(jsonString, TaiXe.class);
 		    System.out.println(jsonString + jsonPart);
 		    HashMap<String, String> result  =new HashMap<>();
 		    if("create".equals(action)) {
-		    	result= taiXeService.themTaiXe(req, taiXe);
+		    	result= taiXeService.themTaiXe(req, taiXe,matKhau);
+		    	
 		    }
 		    else {
 		    	System.out.println(taiXe.getID_TaiXe());

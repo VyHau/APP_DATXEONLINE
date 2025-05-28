@@ -1,6 +1,7 @@
 package controller.Admin;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,66 +20,58 @@ import utils.JsonUtil;
 import utils.TokenManager;
 
 @WebServlet(urlPatterns = {"/api/admin/login"})
-public class API_DangNhap extends HttpServlet{
-	
-	private static final long serialVersionUID = 1L;
-	private final TaiKhoanService adminAccountService=new TaiKhoanService();
-	private final ObjectMapper mapper=new ObjectMapper();
-	@Override
+public class API_DangNhap extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private final TaiKhoanService adminAccountService = new TaiKhoanService();
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	response.setContentType("application/json");
-    	response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-    	// Đọc dữ liệu gửi từ client
-    	String jsonInput = request.getReader().lines().collect(Collectors.joining());
-    	TaiKhoan taiKhoan = JsonUtil.fromJson(jsonInput, TaiKhoan.class);
-    
+        // Đọc dữ liệu gửi từ client
+        String jsonInput = request.getReader().lines().collect(Collectors.joining());
+        TaiKhoan taiKhoan = JsonUtil.fromJson(jsonInput, TaiKhoan.class);
+        int thoiHan=3600;
+        if (taiKhoan != null) {
+            TaiKhoan admin = adminAccountService.signIn(taiKhoan);
+            if (admin != null) {
+                String token = TokenManager.generateToken(admin);
+                Map<String, Object> responseData = new HashMap<>();
 
-    	if (taiKhoan != null) {
-    	    TaiKhoan admin = adminAccountService.signIn(taiKhoan);
-    	    if (admin != null) {
-    	    	
-    	        String token = TokenManager.generateToken(admin);
-    	        Map<String, Object> responseData = new HashMap<>();
-    	        Cookie adminCookie=new Cookie("token", token);
-    	        adminCookie.setMaxAge(3600);
-    	        adminCookie.setDomain("localhost");
-    	        adminCookie.setSecure(false);
-    	        adminCookie.setHttpOnly(false);
-    	        response.addCookie(adminCookie);
-    	        response.setStatus(HttpServletResponse.SC_OK);
-    	        
-    	        Cookie nameCookie = new Cookie("userName", admin.getUserName()); // Hoặc getUsername()
-    	        nameCookie.setMaxAge(3600);
-    	        nameCookie.setDomain("localhost");
-    	        nameCookie.setSecure(false);
-    	        nameCookie.setHttpOnly(false); // Để JS có thể đọc
-    	        response.addCookie(nameCookie);
-    	        
-    	        responseData.put("status", 200);
-    	        responseData.put("message","Đăng nhập thành công!");
-    	        responseData.put("token", token);
-    	        responseData.put("account", admin);
-    	        
-    	        
+                // Thiết lập cookie
+                Cookie adminCookie = new Cookie("token", URLEncoder.encode(token, "UTF-8"));
+                adminCookie.setMaxAge(thoiHan);
+                adminCookie.setPath("/");
+                adminCookie.setSecure(false); // Chỉ dùng trong dev (HTTP)
+                adminCookie.setHttpOnly(false);
+                adminCookie.setAttribute("SameSite", "Lax"); // Hoặc "None" nếu cross-origin
+                adminCookie.setDomain("localhost"); 
+               
+                response.addCookie(adminCookie);
 
-    	        mapper.writeValue(response.getWriter(), responseData); 
-    	        
-    	    } else {
-    	        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    	        mapper.writeValue(response.getWriter(), Map.of(
-    	        		"status", 401,
-    			        "message","Tên tài khoản hoặc mật khẩu không chính xác!")
-    	        		); 
-    	    }
-    	} else {
-    	    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-    	    mapper.writeValue(response.getWriter(), Map.of(
-    	    		"status", 500,
-			        "message","Lỗi server.Vui lòng thử lại sau!"
-    	    		)); 
-    	}
+                response.setStatus(HttpServletResponse.SC_OK);
+                responseData.put("status", 200);
+                responseData.put("message", "Đăng nhập thành công!");
+                responseData.put("token", token);
+                responseData.put("account", admin);
+                responseData.put("duration",thoiHan);
 
-
+                mapper.writeValue(response.getWriter(), responseData);
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                mapper.writeValue(response.getWriter(), Map.of(
+                    "status", 401,
+                    "message", "Tên tài khoản hoặc mật khẩu không chính xác!"
+                ));
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            mapper.writeValue(response.getWriter(), Map.of(
+                "status", 500,
+                "message", "Lỗi server. Vui lòng thử lại sau!"
+            ));
+        }
     }
 }

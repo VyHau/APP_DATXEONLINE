@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import dao.TaiXeDAO;
 import dao.Exception.TaiXeException;
@@ -19,8 +20,15 @@ import utils.FileUtils;
 
 public class TaiXeService {
     private TaiXeDAO taiXeDAO = new TaiXeDAO();
+    public static String layThanhPho(String diaChi) {
+        if (diaChi == null || !diaChi.contains(",")) {
+            return "";
+        }
 
-    public HashMap<String, String> themTaiXe(HttpServletRequest request, TaiXe taiXe) throws SQLException, TaiXeException, IOException, ServletException {
+        String[] parts = diaChi.split(",");
+        return parts[parts.length - 1].trim();
+    }
+    public HashMap<String, String> themTaiXe(HttpServletRequest request, TaiXe taiXe,String matKhau) throws SQLException, TaiXeException, IOException, ServletException {
         String id = taiXeDAO.idTuDongtangTaiXe();
 
         // Lấy Part từ request
@@ -65,7 +73,7 @@ public class TaiXeService {
         taiXe.setGPLX("/uploads/" + pathGPLX);          // /uploads/GPLX_TX004.png
 
         // Lưu vào database
-        ResultSet result = taiXeDAO.themTaiXe_Pr(taiXe);
+        ResultSet result = taiXeDAO.themTaiXe_Pr(taiXe,matKhau);
         HashMap<String, String> map = new HashMap<>();
         while (result.next()) {
             map.put("Status", result.getString("Status"));
@@ -235,15 +243,38 @@ public class TaiXeService {
     }
     public List<TaiXe> dsTaiXeGanKhachHang(double khoangCach,String diaChiKH) throws IOException{
     	List<TaiXe> ds=new ArrayList<>();
-    	List<TaiXe> dsAllTaiXe=taiXeDAO.selectAll();
+    	String thanhPhoKH = layThanhPho(diaChiKH); 
+
+    	List<TaiXe> dsAllTaiXe = taiXeDAO.selectAll().stream()
+    		    .filter(tx -> {
+    		        String thanhPhoTX = layThanhPho(tx.getDiaChi());
+    		        return thanhPhoTX.equalsIgnoreCase(thanhPhoKH)
+    		            && (tx.getTrangThaiHD()==true);
+    		    })
+    		    .collect(Collectors.toList());
+
+
     	for (TaiXe taiXe : dsAllTaiXe) {
 			double distance=DistanceCalculator.calculateDistanceByAddress(taiXe.getDiaChi(),diaChiKH);
 			if(distance<=khoangCach) {
 				ds.add(taiXe);
-				System.out.println(distance);
 			}
 		}
     	return ds;
+    }
+    public List<HashMap<String, Object>> dsTaiXeTieuBieu() throws SQLException{
+    	ResultSet rs=taiXeDAO.dsTaiXeTieuBieu();
+    	List<HashMap<String, Object>> result = new ArrayList<>();
+        while (rs.next()) {
+            HashMap<String, Object> item = new HashMap<>();
+            item.put("id", rs.getString("ID_TX"));
+            item.put("tenTX", rs.getString("TENTX"));
+            item.put("anhDaiDien",rs.getString("ANHDAIDIEN"));
+            item.put("diemTB", rs.getDouble("DIEM_TRUNGBINH"));
+            
+            result.add(item);
+        }
+        return result;
     }
 
 }

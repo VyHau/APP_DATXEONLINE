@@ -2,6 +2,8 @@ package dao;
 
 import java.sql.*;
 import java.util.List;
+
+import model.DatXe;
 import model.KhachHang;
 public class KhachHangDAO extends AbstractDAO<KhachHang> implements InterfaceDAO<KhachHang>{
 
@@ -61,7 +63,16 @@ public class KhachHangDAO extends AbstractDAO<KhachHang> implements InterfaceDAO
 		String sql="Fn_TyLeHaiLongCuaKhachHang";
 		return (double) callFunction(sql, null, Types.DOUBLE);
 	}
-	
+	public ResultSet capNhatKhachHang(KhachHang KH,String pass) throws SQLException {
+		String sql="Pr_CapNhatKhachHang";
+		Object[] params= {KH.getID_KhachHang(),KH.getTenKhachHang(),KH.getSDT(),KH.getDiaChi(),pass};
+		return callProcedureResultSet(sql, params);
+	}
+	public ResultSet themKhachHang(KhachHang KH,String pass) throws SQLException{
+		String sql="Pr_ThemKhachHang";
+		Object[] params= {KH.getID_KhachHang(),KH.getTenKhachHang(),KH.getSDT(),KH.getDiaChi(),pass};
+		return callProcedureResultSet(sql, params);
+	}
 	private final RowMapper<KhachHang> khachHangMapper = new RowMapper<KhachHang>() {
 	    @Override
 	    public KhachHang mapRow(ResultSet rs) throws SQLException {

@@ -31,10 +31,8 @@ public class TaiKhoanController extends HttpServlet{
 		
 		resp.setCharacterEncoding("UTF-8");
 		String jsonInput = req.getReader().lines().collect(Collectors.joining());
-		System.out.println(jsonInput);
 		
 		TaiKhoan taiKhoan = JsonUtil.fromJson(jsonInput, TaiKhoan.class);
-		System.out.println(taiKhoan);
 		
 		TaiKhoan taiKhoanNew=taiKhoanService.signIn(taiKhoan);
 		if (taiKhoanNew != null) {

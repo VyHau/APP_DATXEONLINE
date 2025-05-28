@@ -38,7 +38,7 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 		Object[] params= {id};
 		return executeQuery(sql, params, taiKhoanMapper);
 	}
-
+	
 	@Override
 	public List<TaiKhoan> selectAll() {
 		String sql = "SELECT * FROM TAIKHOAN ";
@@ -49,6 +49,11 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 	public List<TaiKhoan> selectByCondition(String sql,Object[] params) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public String layMatKhau(String idNguoiDung,String idVaiTro) {
+		String sql="Fn_LayMatKhau";
+		Object[] params= {idVaiTro,idNguoiDung};
+		return (String) callFunction(sql, params, Types.VARCHAR);
 	}
 	public ResultSet mo_KhoaTaiKhoan(String userName,boolean trangThai) throws SQLException{
 		String sql="Pr_MoKhoaTaiKhoan";

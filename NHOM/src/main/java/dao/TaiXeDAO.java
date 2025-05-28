@@ -98,8 +98,8 @@ public class TaiXeDAO extends AbstractDAO<TaiXe> implements InterfaceDAO<TaiXe> 
     public String idTuDongtangTaiXe() throws SQLException {
     	return (String) callFunction("Fn_TangTuDongID_TaiXe",null,Types.VARCHAR);
     }
-    public ResultSet themTaiXe_Pr(TaiXe taixe) throws SQLException {
-    	Object[] params= {taixe.getID_LoaiXe(),taixe.getTenTaiXe(),taixe.getNgaySinh(),taixe.getCCCD(),taixe.getGPLX(),taixe.getSDT(),taixe.getEmail(),"12345",taixe.getBienSoXe(),taixe.getTenXe(),taixe.getAnhDaiDien(),taixe.getGioiTinh(),taixe.getDiaChi(),taixe.getKhuVuc(),taixe.getLLTP()};
+    public ResultSet themTaiXe_Pr(TaiXe taixe,String matKhau) throws SQLException {
+    	Object[] params= {taixe.getID_LoaiXe(),taixe.getTenTaiXe(),taixe.getNgaySinh(),taixe.getCCCD(),taixe.getGPLX(),taixe.getSDT(),taixe.getEmail(),matKhau,taixe.getBienSoXe(),taixe.getTenXe(),taixe.getAnhDaiDien(),taixe.getGioiTinh(),taixe.getDiaChi(),taixe.getKhuVuc(),taixe.getLLTP()};
     	ResultSet rs= callProcedureResultSet("Pr_ThemTaiXe",params );
 		return rs;
     	
@@ -122,6 +122,11 @@ public class TaiXeDAO extends AbstractDAO<TaiXe> implements InterfaceDAO<TaiXe> 
     	String sql="Pr_DSTaiXeCoTheNhanChuyen";
     	return executeQueryList(sql, null, taiXeMapper);
     }
+    public ResultSet dsTaiXeTieuBieu() throws SQLException{
+		String sql="Pr_DSTaiXeTieuBieu";
+		return callProcedureResultSet(sql, null); 
+    }
+    	
     private final RowMapper<TaiXe> taiXeMapper = (ResultSet rs) -> {
         TaiXe obj = new TaiXe();
         obj.setID_TaiXe(rs.getString("ID_TX"));         // sửa lại tên cho rõ nghĩa

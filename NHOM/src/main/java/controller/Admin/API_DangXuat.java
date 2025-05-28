@@ -15,7 +15,7 @@ public class API_DangXuat extends HttpServlet{
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.setContentType("text/html");
+		resp.setContentType("application/json");
 		resp.getWriter().write("Logout admin");
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

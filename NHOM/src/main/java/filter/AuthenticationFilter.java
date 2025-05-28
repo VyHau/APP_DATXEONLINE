@@ -9,44 +9,47 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import utils.TokenManager;
-import java.util.HashMap;
 import java.util.Map;
 
 public class AuthenticationFilter implements Filter {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) throws ServletException {}
+
+    private void addCORSHeaders(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:3000");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
+        response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Max-Age", "3600");
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+        // Thêm header CORS cho mọi response
+        addCORSHeaders(httpResponse);
 
         String uri = httpRequest.getRequestURI();
         String method = httpRequest.getMethod();
 
-        // Thêm header CORS
-        httpResponse.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:3000"); // Thay bằng origin của frontend
-        httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-        httpResponse.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
-        httpResponse.setHeader("Access-Control-Allow-Credentials", "true"); // Nếu dùng cookies
-        httpResponse.setHeader("Access-Control-Max-Age", "3600");
-
-        // Xử lý yêu cầu OPTIONS (preflight)
+        // Xử lý preflight request
         if ("OPTIONS".equalsIgnoreCase(method)) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
-            return; // Không tiếp tục chain cho OPTIONS
+            return;
         }
 
         // Bỏ qua các endpoint không cần xác thực
         if (uri.endsWith("/api/admin/login") ||
             uri.endsWith("/api/admin/driver/status") ||
             uri.endsWith("/api/admin/quanly/chuyenXe") ||
-            uri.endsWith("/api/driver/dsGanKhachHang")||
-            uri.endsWith("/api/admin/thongKe")||
+            uri.endsWith("/api/driver/dsGanKhachHang") ||
+            uri.endsWith("/api/admin/thongKe") ||
             uri.endsWith("/api/admin/datXe/status") ||
             uri.endsWith("/api/admin/tong-quan") ||
             uri.matches(".*\\.(css|js|png|jpg|jpeg|gif|woff|woff2|ttf|svg)")) {
@@ -65,6 +68,7 @@ public class AuthenticationFilter implements Filter {
             }
         }
 
+        // Cho phép kiểm tra qua Authorization header nếu không có cookie
         if (token == null) {
             String authHeader = httpRequest.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -94,9 +98,7 @@ public class AuthenticationFilter implements Filter {
             ));
         }
     }
-    
 
     @Override
-    public void destroy() {
-    }
+    public void destroy() {}
 }

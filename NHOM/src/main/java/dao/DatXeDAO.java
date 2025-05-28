@@ -18,8 +18,8 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
 
     @Override
     public int insert(DatXe datXe) {
-        String sql = "INSERT INTO DATXE (ID_DATXE, ID_KH, ID_TX, ID_THANHTOAN, ID_KHUYENMAI, DIEMTRA, DIEMDON, THOIGIANDAT, THOIGIANDON, THOIGIANDEN, TRANGTHAI, KHOANGCACH, DIEMSO, DANHGIA)"
-        		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO DATXE (ID_DATXE, ID_KH, ID_TX, ID_THANHTOAN, ID_KHUYENMAI, DIEMTRA, DIEMDON,, THOIGIANDAT, THOIGIANDON, THOIGIANDEN, TRANGTHAI, KHOANGCACH, DIEMSO, DANHGIA)"
+        		+ " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?)";
         Object[] params = {
             datXe.getID_DatXe(),
             datXe.getID_KhachHang(),
@@ -28,6 +28,7 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
             datXe.getID_KhuyenMai(),
             datXe.getDiemTra(),
             datXe.getDiemDon(),
+            datXe.getGiaTien(),
             datXe.getThoiGianDat(),
             datXe.getThoiGianDon(),
             datXe.getThoiGianDen(),
@@ -182,12 +183,18 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
         map.put("thoiGianDen", rs.getString("THOIGIANDEN"));
         map.put("thoiGianDon", rs.getString("THOIGIANDON"));
         map.put("trangThai", rs.getString("TRANGTHAI"));
-        map.put("khoangCach", rs.getString("KHOANGCACH"));
+        map.put("khoangCach", rs.getDouble("KHOANGCACH"));
         map.put("danhGia", rs.getString("DANHGIA"));
-        map.put("giaTien", rs.getString("GIATIEN"));
+        map.put("diemSo",rs.getInt("DIEMSO"));
+        map.put("giaTien", rs.getDouble("GIATIEN"));
         return map;
         
     }
+    public List<DatXe> lichSuChuyenXeTheoKH(String idKH){
+		String sql="SELECT * FROM DATXE WHERE ID_KHNO=?";
+		Object[] params= {idKH};
+		return executeQueryList(sql, params, mapChuyenXe());
+	}
 //    private Map<String, Object> mapChuyenXeChiTiet(ResultSet rs) throws SQLException {
 //        Map<String, Object> map = new HashMap<>();
 //
@@ -247,6 +254,7 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
                 datXe.setKhoangCach(rs.getDouble("KHOANGCACH"));
                 datXe.setDiemSo(rs.getInt("DIEMSO"));
                 datXe.setDanhGia(rs.getString("DANHGIA"));
+                datXe.setGiaTien(rs.getDouble("GIATIEN"));
                 return datXe;
             }
         };

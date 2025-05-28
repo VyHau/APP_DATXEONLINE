@@ -239,11 +239,16 @@ public class ChuyenXeService {
             formattedChuyenXe.put("khoangCach", chuyenXe.getKhoangCach());
             formattedChuyenXe.put("diemSo", chuyenXe.getDiemSo()); 
             formattedChuyenXe.put("danhGia", chuyenXe.getDanhGia());
+            formattedChuyenXe.put("giaTien", chuyenXe.getGiaTien());
+            
 
             formattedList.add(formattedChuyenXe);
         }
 
         return formattedList;
+    }
+    public List<DatXe> lichSuChuyenXe(String idKH){
+    	return datXeDAO.lichSuChuyenXeTheoKH(idKH);
     }
     
 }

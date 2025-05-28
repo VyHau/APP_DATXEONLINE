@@ -11,4 +11,5 @@ public class LoaiXeService {
 	public List<LoaiXe> selectAll(){
 		return loaiXeDAO.selectAll();
 	}
+	
 }

@@ -83,7 +83,7 @@ public class ChuyenXeController extends HttpServlet{
     	 resp.setContentType("application/json");
          String jsonInput = req.getReader().lines().collect(Collectors.joining());
          Map<String,String> data = mapper.readValue(jsonInput, new TypeReference<Map<String, String>>() {});
-        chuyenXeService.huyChuyenXe(data.get("ID_CHUYENXE"));
+        chuyenXeService.huyChuyenXe(data.get("ID_DX"));
         
         mapper.writeValue(resp.getOutputStream(), "{Huỷ chuyến thành công}");
          
