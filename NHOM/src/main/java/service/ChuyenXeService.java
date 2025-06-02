@@ -1,15 +1,11 @@
 package service;
 
-import java.sql.Date;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +14,6 @@ import dao.KhachHangDAO;
 import dao.KhuyenMaiDAO;
 import dao.LoaiXeDAO;
 import dao.PhuongThucThanhToanDAO;
-import dao.TaiKhoanDAO;
 import dao.TaiXeDAO;
 import model.DatXe;
 import model.KhachHang;
@@ -34,12 +29,14 @@ public class ChuyenXeService {
     private PhuongThucThanhToanDAO ptttDAO=new PhuongThucThanhToanDAO();
     private TaiXeDAO taiXeDAO=new TaiXeDAO();
 
-    public void bookRide(DatXe datXe) {
+     public void bookRide(DatXe datXe, String loaiXe) throws SQLException {
+        System.out.print(datXe.getDiemDon());
+        System.out.print(datXe.getDiemTra());
+        datXe.getDiemTra();
+        System.out.println(datXe);
         List<TaiXe> drivers = taiXeDAO.findAllDriverActive();
         if (!drivers.isEmpty()) {
-//            ride.setDriverId(drivers.get(0).getId());
-//            chuyenXe.setStatus("PENDING");
-            datXeDAO.insert(datXe);
+            datXeDAO.themChuyenXe(datXe, loaiXe);
         } else {
             throw new RuntimeException("No available drivers");
         }
@@ -249,6 +246,9 @@ public class ChuyenXeService {
     }
     public List<DatXe> lichSuChuyenXe(String idKH){
     	return datXeDAO.lichSuChuyenXeTheoKH(idKH);
+    }
+	   public List<DatXe> getAvailableRides() throws SQLException, IOException {
+        return datXeDAO.getAvailableRides();
     }
     
 }

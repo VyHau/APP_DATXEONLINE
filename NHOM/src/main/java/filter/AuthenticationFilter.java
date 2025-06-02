@@ -46,12 +46,13 @@ public class AuthenticationFilter implements Filter {
 
         // Bỏ qua các endpoint không cần xác thực
         if (uri.endsWith("/api/admin/login") ||
-            uri.endsWith("/api/admin/driver/status") ||
-            uri.endsWith("/api/admin/quanly/chuyenXe") ||
-            uri.endsWith("/api/driver/dsGanKhachHang") ||
-            uri.endsWith("/api/admin/thongKe") ||
-            uri.endsWith("/api/admin/datXe/status") ||
-            uri.endsWith("/api/admin/tong-quan") ||
+//            uri.endsWith("/api/admin/driver/status") ||
+//            uri.endsWith("/api/admin/quanly/chuyenXe") ||
+//            uri.endsWith("/api/driver/dsGanKhachHang") ||
+//            uri.endsWith("/api/admin/thongKe") ||
+//            uri.endsWith("/api/admin/datXe/status") ||
+//            uri.endsWith("/api/admin/tong-quan") ||
+        		uri.endsWith("/api/user/trangChu") ||
             uri.matches(".*\\.(css|js|png|jpg|jpeg|gif|woff|woff2|ttf|svg)")) {
             chain.doFilter(request, response);
             return;

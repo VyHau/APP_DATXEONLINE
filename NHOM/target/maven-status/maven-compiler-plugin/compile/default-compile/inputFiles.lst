@@ -1,4 +1,3 @@
-/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/API_DSTaiXeGanKhachHang.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_ChuyenXe_Status.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_DangNhap.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_DangXuat.java
@@ -10,6 +9,7 @@
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_TongQuan.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_User_Status.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/ChuyenXeController.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Driver/API_DSTaiXeGanKhachHang.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/KhachHangController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/LoaiXeController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/TaiKhoanController.java

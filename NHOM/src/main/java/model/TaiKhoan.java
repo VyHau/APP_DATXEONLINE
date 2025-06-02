@@ -5,6 +5,7 @@ public class TaiKhoan {
     private String matKhau;
     private String ID_VaiTro;
     private String ID_NguoiDung;
+    private Boolean trangThaiTK;
 
     public String getUserName() {
         return SDT;
@@ -43,6 +44,7 @@ public class TaiKhoan {
         this.matKhau = matKhau;
         this.ID_VaiTro = ID_VaiTro;
         this.ID_NguoiDung = ID_NguoiDung;
+        this.trangThaiTK=true;
     }
 
 	public TaiKhoan() {
@@ -59,5 +61,13 @@ public class TaiKhoan {
 				+ "                }",this.SDT, this.matKhau,this.ID_VaiTro,this.ID_NguoiDung);
 		return json;
 		
+	}
+
+	public Boolean getTrangThaiTK() {
+		return trangThaiTK;
+	}
+
+	public void setTrangThaiTK(Boolean trangThaiTK) {
+		this.trangThaiTK = trangThaiTK;
 	}
 }

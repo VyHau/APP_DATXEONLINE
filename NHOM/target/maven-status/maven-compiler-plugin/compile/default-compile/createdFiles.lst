@@ -12,6 +12,7 @@ model/BangGia.class
 service/TaiKhoanService.class
 service/ChuyenXeService.class
 model/KhachHang.class
+controller/API_DSTaiXeGanKhachHang.class
 model/DatXe.class
 model/PhuongThucThanhToan.class
 model/VaiTro.class

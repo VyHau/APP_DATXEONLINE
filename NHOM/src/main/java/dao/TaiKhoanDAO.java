@@ -11,30 +11,30 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
 
 	@Override
 	public int insert(TaiKhoan obj) {
-		String sql = "INSERT INTO TAIKHOAN (USERNAME, PASS_WORD,ID_VAITRO,REF_ID) VALUES\n"
-				+ "(?,?,?,?)";
-		Object[] params= {obj.getUserName(),obj.getMatKhau(),obj.getID_VaiTro(),obj.getID_NguoiDung()};
+		String sql = "INSERT INTO TAIKHOAN (SDT, MATKHAU,ID_VAITRONO,ID_NGUOIDUNG,TRANGTHAITK) VALUES\n"
+				+ "(?,?,?,?,?)";
+		Object[] params= {obj.getUserName(),obj.getMatKhau(),obj.getID_VaiTro(),obj.getID_NguoiDung(),true};
 		return executeUpdate(sql, params);
 	}
 
 	@Override
 	public int update(TaiKhoan obj) {
-		String sql = "UPDATE TAIKHOAN SET  PASS_WORD=?,REF_ID=? WHERE USERNAME=? AND ID_VAITRO=?"
+		String sql = "UPDATE TAIKHOAN SET  MATKHAU=?,ID_NGUOIDUNG=?,TRANGTHAITK=? WHERE SDT=? AND ID_VAITRONO=? "
 				+ "(?,?,?,?)";
-		Object[] params= {obj.getMatKhau(),obj.getID_NguoiDung(),obj.getUserName(),obj.getID_VaiTro()};
+		Object[] params= {obj.getMatKhau(),obj.getID_NguoiDung(),obj.getTrangThaiTK(),obj.getUserName(),obj.getID_VaiTro()};
 		return executeUpdate(sql, params);
 	}
 
 	@Override
 	public int delete(String id) {
-		String sql = "DELETE TAIKHOAN WHERE USERNAME=?";
+		String sql = "DELETE TAIKHOAN WHERE SDT=?";
 		Object[] params= {id};
 		return executeUpdate(sql, params);
 	}
 
 	@Override
 	public TaiKhoan selectById(String id) {
-		String sql = "SELECT * FROM TAIKHOAN WHERE USERNAME=?";
+		String sql = "SELECT * FROM TAIKHOAN WHERE SDT=?";
 		Object[] params= {id};
 		return executeQuery(sql, params, taiKhoanMapper);
 	}
@@ -78,6 +78,7 @@ public class TaiKhoanDAO extends AbstractDAO<TaiKhoan> implements InterfaceDAO<T
              obj.setMatKhau(rs.getString("MATKHAU"));
              obj.setID_VaiTro(rs.getString("ID_VAITRONO"));
              obj.setID_NguoiDung(rs.getString("ID_NGUOIDUNG"));
+             obj.setTrangThaiTK(rs.getBoolean("TRANGTHAITK"));
              return obj;
         };
 
