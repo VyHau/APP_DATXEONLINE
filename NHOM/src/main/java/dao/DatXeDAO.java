@@ -91,6 +91,12 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
         Object[] params = {datXe.getID_KhachHang(), datXe.getID_ThanhToan(), datXe.getID_KhuyenMai(), datXe.getDiemDon(), datXe.getDiemTra(), LocalDate.now(), datXe.getKhoangCach(), loaiXe};
         return callProcedureResultSet(sql, params);
     }
+      public DatXe kiemTraNhanChuyen(String idTX) {
+    	  String sql="select * from DATXE\n"
+    	  		+ "where DATXe.ID_TXNO=? AND TRANGTHAI=N'Đang thực hiện'";
+    	  Object[] params= {idTX};
+    	  return executeQuery(sql, params, mapChuyenXe());
+      }
     public int huyChuyenXe(String id) {
     	 String sql = "UPDATE DATXE SET TRANGTHAI='Đã huỷ' WHERE ID_DATXE=?";
          Object[] params = { id };
@@ -206,6 +212,11 @@ public class DatXeDAO extends AbstractDAO<DatXe> implements InterfaceDAO<DatXe> 
         List<DatXe> availableRides = executeQueryList(sql, params, mapChuyenXe());
         return availableRides;
     }
+     public int capNhatDGia(String id, String danhGia, int diem) throws SQLException {
+         String sql = "UPDATE DATXE SET DANHGIA = ?, DIEMSO = ? WHERE ID_DATXE = ?";
+         Object[] params = {danhGia, diem, id};
+         return executeUpdate(sql, params);
+     }
 //    private Map<String, Object> mapChuyenXeChiTiet(ResultSet rs) throws SQLException {
 //        Map<String, Object> map = new HashMap<>();
 //

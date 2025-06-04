@@ -65,7 +65,9 @@ public class KhachHangService {
     public double tyLeHaiLongChuyen() {
     	return khachHangDAO.tyLeHaiLong();
     }
-
+    public KhachHang selectUser(String id){
+        return khachHangDAO.selectById(id);
+    }
     public List<Map<String, Object>> dsChiTietKhachHang(){
     	List<KhachHang> khachHangList = khachHangDAO.selectAll();
         List<Map<String, Object>> formattedList = new ArrayList<>();

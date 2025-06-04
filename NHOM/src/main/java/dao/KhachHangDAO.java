@@ -70,7 +70,7 @@ public class KhachHangDAO extends AbstractDAO<KhachHang> implements InterfaceDAO
 	}
 	public ResultSet themKhachHang(KhachHang KH,String pass) throws SQLException{
 		String sql="Pr_ThemKhachHang";
-		Object[] params= {KH.getID_KhachHang(),KH.getTenKhachHang(),KH.getSDT(),KH.getDiaChi(),pass};
+		Object[] params= {KH.getTenKhachHang(),KH.getSDT(),KH.getDiaChi(),pass};
 		return callProcedureResultSet(sql, params);
 	}
 	private final RowMapper<KhachHang> khachHangMapper = new RowMapper<KhachHang>() {

@@ -52,7 +52,6 @@ public class TaiXeService {
         String cccdExt = getFileExtension(cccdPart);
         String gplxExt = getFileExtension(gplxPart);
 
-        // Tạo tên file KHÔNG có đuôi để truyền vào FileUtils.saveFile
         String baseAvartar = "AVATAR_" + id; // AVATAR_TX004
         String baseCCCD = "CCCD_" + id;      // CCCD_TX004
         String baseGPLX = "GPLX_" + id;      // GPLX_TX004
@@ -90,7 +89,6 @@ public class TaiXeService {
         return "";
     }
     public HashMap<String, String> updateTaiXe(HttpServletRequest request, TaiXe taiXe) throws SQLException, TaiXeException, IOException, ServletException {
-        // Lấy ID tài xế từ đối tượng TaiXe (hoặc từ request nếu cần)
         String id = taiXe.getID_TaiXe();
         if (id == null || id.isEmpty()) {
             throw new TaiXeException("ID tài xế không hợp lệ.");

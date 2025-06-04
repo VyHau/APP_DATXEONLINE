@@ -36,9 +36,9 @@ public class KhachHangController extends HttpServlet {
         JSONObject jsonObject = new JSONObject(jsonInput);
 
         // Lấy mật khẩu
-        String matkhau = jsonObject.optString("matkhau");
+        String matkhau = jsonObject.optString("matKhau");
 
-        jsonObject.remove("matkhau");
+        jsonObject.remove("matKhau");
         KhachHang khachHang = JsonUtil.fromJson(jsonObject.toString(), KhachHang.class);
         HashMap<String,Object> map=new HashMap<>();
        try {

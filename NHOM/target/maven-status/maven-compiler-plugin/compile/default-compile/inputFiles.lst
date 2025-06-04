@@ -10,12 +10,16 @@
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Admin/API_User_Status.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/ChuyenXeController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Driver/API_DSTaiXeGanKhachHang.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Driver/API_HoanThanhChuyenXe.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/Driver/API_KiemTraNhanChuyen.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/KhachHangController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/LoaiXeController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/TaiKhoanController.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/TaiXeController.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/User/API_DanhGiaChuyenXe.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/User/API_HuyChuyenXe.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/User/API_LichSuChuyenXe.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/User/API_ThongTinKH.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/controller/User/API_TrangChu.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/dao/AbstractDAO.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/dao/DatXeDAO.java
@@ -42,6 +46,7 @@
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/model/TaiXe.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/model/VaiTro.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/service/ChuyenXeService.java
+/Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/service/ChuyenXeServiceExtended.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/service/KhachHangService.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/service/LoaiXeService.java
 /Users/macbookpro/Documents/Study/Java/Server/NHOM/src/main/java/service/TaiKhoanService.java

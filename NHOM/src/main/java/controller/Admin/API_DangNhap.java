@@ -33,7 +33,7 @@ public class API_DangNhap extends HttpServlet {
         // Đọc dữ liệu gửi từ client
         String jsonInput = request.getReader().lines().collect(Collectors.joining());
         TaiKhoan taiKhoan = JsonUtil.fromJson(jsonInput, TaiKhoan.class);
-        int thoiHan=3600;
+        int thoiHan=7200;
         if (taiKhoan != null) {
             TaiKhoan admin = adminAccountService.signIn(taiKhoan);
             if (admin != null) {

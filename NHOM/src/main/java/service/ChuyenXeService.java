@@ -20,6 +20,7 @@ import model.KhachHang;
 import model.KhuyenMai;
 import model.PhuongThucThanhToan;
 import model.TaiXe;
+import utils.DistanceCalculator;
 
 public class ChuyenXeService {
     private DatXeDAO datXeDAO = new DatXeDAO();
@@ -40,6 +41,9 @@ public class ChuyenXeService {
         } else {
             throw new RuntimeException("No available drivers");
         }
+    }
+    public boolean kiemTraNhanChuyen(String idTX) {
+    	return datXeDAO.kiemTraNhanChuyen(idTX)!=null;
     }
     public int huyChuyenXe(String id) {
     	return datXeDAO.huyChuyenXe(id);
@@ -244,11 +248,27 @@ public class ChuyenXeService {
 
         return formattedList;
     }
+    public int capNhatDanhGia(String id, String danhGia, int diem) throws SQLException {
+        return datXeDAO.capNhatDGia(id, danhGia, diem);
+ }
     public List<DatXe> lichSuChuyenXe(String idKH){
     	return datXeDAO.lichSuChuyenXeTheoKH(idKH);
     }
-	   public List<DatXe> getAvailableRides() throws SQLException, IOException {
-        return datXeDAO.getAvailableRides();
+	   public List<DatXe> getAvailableRides(String diaChiTX) throws SQLException, IOException {
+        List<DatXe> ds = datXeDAO.getAvailableRides();
+        List<DatXe> danhSachGan = new ArrayList<>();
+        
+        for (DatXe datXe : ds) {
+            double khoangCach = DistanceCalculator.calculateDistanceByAddress(diaChiTX, datXe.getDiemDon());
+            System.out.println(datXe.getDiemDon());
+
+            if (khoangCach <= 10.0) {
+                danhSachGan.add(datXe);
+            }
+        }
+        if(ds.isEmpty())
+        	return null;
+        return danhSachGan;
     }
     
 }

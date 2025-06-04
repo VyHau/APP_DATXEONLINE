@@ -34,10 +34,12 @@ public class ChuyenXeController extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
-        String pathInfo = req.getPathInfo();
+        String pathInfo = req.getServletPath();
         try {
-        	if (pathInfo != null && pathInfo.equals("/available")) {
-        	    List<DatXe> availableRides = chuyenXeService.getAvailableRides();
+        	if (pathInfo != null && "/api-rides/available".equals(pathInfo)) {
+        		String diaChiTX=req.getParameter("diaChiTX");
+        	    List<DatXe> availableRides = chuyenXeService.getAvailableRides(diaChiTX);
+        	    System.out.println(diaChiTX);
         	    List<Map<String, Object>> responseData = availableRides.stream().map(datXe -> {
         	        Map<String, Object> map = new HashMap<>();
         	        map.put("id", datXe.getID_DatXe());
@@ -47,10 +49,12 @@ public class ChuyenXeController extends HttpServlet {
         	        map.put("distance", datXe.getKhoangCach());
         	        map.put("status", datXe.getTrangThai());
         	        map.put("driverId", datXe.getID_TaiXe());
+        	        map.put("price",datXe.getGiaTien());
         	        return map;
         	    }).collect(Collectors.toList());
         	    mapper.writeValue(resp.getOutputStream(), Map.of("status", 200, "data", responseData));
         	} else {
+        		System.out.println("vo day 2");
                 List<DatXe> list = chuyenXeService.getAllRides();
                 List<Map<String, Object>> responseData = list.stream().map(datXe -> {
                     Map<String, Object> map = new HashMap<>();
@@ -61,6 +65,7 @@ public class ChuyenXeController extends HttpServlet {
                     map.put("distance", datXe.getKhoangCach());
                     map.put("status", datXe.getTrangThai());
                     map.put("driverId", datXe.getID_TaiXe());
+                    map.put("price",datXe.getGiaTien());
                     return map;
                 }).collect(Collectors.toList());
                 mapper.writeValue(resp.getOutputStream(), Map.of("status", 200, "data", responseData));

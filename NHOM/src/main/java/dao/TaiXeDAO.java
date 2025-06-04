@@ -56,7 +56,7 @@ public class TaiXeDAO extends AbstractDAO<TaiXe> implements InterfaceDAO<TaiXe> 
 		return null;
 	}
     public List<TaiXe> findAllDriverActive() {
-        String sql = "SELECT * FROM TAIXE WHERE TRANGTHAI = true";
+        String sql = "SELECT * FROM TAIXE WHERE TRANGTHAIHD = 1";
         return executeQueryList(sql, null, taiXeMapper);
     }
 
